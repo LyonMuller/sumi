@@ -171,6 +171,40 @@ def push_pose(hands: Sequence[Hand], face: Face) -> bool:
     return all(sum(extended(hand, base) for base in (5, 9, 13, 17)) >= 3 for hand in hands)
 
 
+SPIRIT_CHARGE_SECONDS = 2.0   # arms up this long gives a full spirit bomb
+SPIRIT_MIN_CHARGE = .4        # lowering the arms before this much charge only lets the ball fade
+SPIRIT_GRACE = .5             # the raised hands may flicker this long without dropping the ball
+SPIRIT_THROW_LOST = .3        # hands gone this long after a full charge: the arms came down out of frame
+
+
+def raised_hand(hand: Hand, face: Face) -> bool:
+    """An open hand held above the head: palm above the forehead, hand-sized for this face."""
+    if not valid_hand(hand) or not _face_ok(face):
+        return False
+    x, y = palm_centre(hand)
+    return (.12 < distance(hand, 0, 9)/face.height < 1.6 and y < face.y+face.height*.05
+            and abs(x-(face.x+face.width/2)) < face.width*5
+            and sum(extended(hand, base) for base in (5, 9, 13, 17)) >= 3)
+
+
+def lowered_hand(hand: Hand, face: Face) -> bool:
+    """A hand that came down: palm below the eyes."""
+    return valid_hand(hand) and palm_centre(hand)[1] > face.y+face.height*.35
+
+
+def spirit_pose(hands: Sequence[Hand], face: Face) -> bool:
+    """Both arms raised: two open hands above the head (the spirit bomb charge)."""
+    return len(hands) == 2 and all(raised_hand(hand, face) for hand in hands)
+
+
+def spirit_ball(hands: Sequence[Hand], face: Face) -> Ball:
+    """The ball floats above the raised hands, centred between them; size is the face height."""
+    up = [palm_centre(hand) for hand in hands if valid_hand(hand)] or [(face.x+face.width/2, face.y)]
+    x = sum(p[0] for p in up)/len(up)
+    top = min(p[1] for p in up)
+    return Ball(x, top-face.height*.8, float(face.height))
+
+
 @dataclass(frozen=True)
 class Recognition:
     matched: bool
@@ -291,6 +325,42 @@ class GestureRecognizer:
             return Recognition(False, 0, 'Aproxime as duas mãos, palma com palma, em concha.')
         return Recognition(False, 0, 'Junte as duas mãos em concha na frente do peito.' if valid else instruction)
 
+    def _spirit(self, hands: Sequence[Hand], face: Face, now: float, instruction: str) -> Recognition:
+        """Raise both open hands above the head to charge; bring the arms down to throw."""
+        valid = [hand for hand in hands if valid_hand(hand)]
+        up = [hand for hand in valid if raised_hand(hand, face)]
+        if not self.armed:
+            if up:
+                self.neutral_since = None
+            else:
+                self._neutral(now)
+            return Recognition(False, 0, 'Baixe os braços antes de carregar de novo.' if up else instruction)
+        if len(up) == 2 or (self.charge_since is not None and up):
+            if self.charge_since is None:
+                self.charge_since = now
+            self.charge_seen = now
+            self.last_ball = spirit_ball(up, face)
+            self.level = min(1.0, (now-self.charge_since)/SPIRIT_CHARGE_SECONDS)
+            hint = ('Carga completa! Baixe os braços para lançar.' if self.level >= 1
+                    else 'Reunindo energia… mantenha os braços erguidos.')
+            return Recognition(False, self.level, hint, True, self.level, self.last_ball)
+        if self.charge_since is not None:
+            gap = now-self.charge_seen
+            down = any(lowered_hand(hand, face) for hand in valid)
+            if self.level >= SPIRIT_MIN_CHARGE and (down or (not valid and self.level >= 1 and gap >= SPIRIT_THROW_LOST)):
+                ball, level = self.last_ball, self.level
+                self._pulse()
+                self._end_charge()
+                return Recognition(True, 1.0, 'Esfera lançada! Baixe os braços antes de repetir.', False, level, ball)
+            if down or gap > SPIRIT_GRACE*(3 if self.level >= 1 else 1):
+                self._end_charge()
+                return Recognition(False, 0, 'A esfera se desfez. Erga as duas mãos de novo.')
+            return Recognition(False, self.level, 'Baixe os braços para lançar.' if self.level >= SPIRIT_MIN_CHARGE
+                               else 'Mantenha as duas mãos erguidas.', gap <= SPIRIT_GRACE, self.level, self.last_ball)
+        if len(up) == 1:
+            return Recognition(False, 0, 'Erga as duas mãos acima da cabeça.')
+        return Recognition(False, 0, instruction)
+
     def update(self, hands: Sequence[Hand], face: Face | None, now: float, effect: str) -> Recognition:
         guide = guide_for(effect)
         if effect != self.mode:
@@ -309,6 +379,8 @@ class GestureRecognizer:
             return Recognition(False, 0, guide.instruction)
         if guide.kind == 'wave':
             return self._wave(hands, face, now, guide.instruction)
+        if guide.kind == 'spirit':
+            return self._spirit(hands, face, now, guide.instruction)
         if not guide.motion:
             matched = (len(hands) == 1 and goku_pose(hands[0], face) if guide.kind == 'forehead' else
                        ninja_pose(hands, face) if guide.kind == 'ninja' else

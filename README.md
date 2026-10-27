@@ -104,8 +104,8 @@ Clique em **Como fazer**, no aplicativo, para ver a ilustração e os passos amp
 | <img src="assets/gestures/palma.png" width="80" alt="Uma palma aberta para a câmera"> | **Saída de cena** | Mostre uma palma aberta e mantenha parada até completar a barra. Não precisa acenar. |
 | <img src="assets/gestures/portal.png" width="80" alt="Duas palmas nas laterais do rosto"> | **Portal** | Duas palmas abertas, uma de cada lado do rosto; mantenha até completar a barra. |
 | <img src="assets/gestures/manual.png" width="80" alt="Ativação manual"> | **Instantâneo** | Use Ativar efeito ou Reaparecer. |
-
-Um efeito de onda de energia está a caminho em uma próxima versão.
+| <img src="assets/gestures/onda.png" width="80" alt="Mãos em concha na frente do peito"> | **Onda de energia** | Junte as duas mãos em concha na frente do peito para carregar; abra as mãos e empurre para disparar. Você continua na imagem. |
+| <img src="assets/gestures/esfera.png" width="80" alt="Mãos erguidas com uma esfera de energia sobre a cabeça"> | **Esfera de energia** | Erga as duas mãos abertas acima da cabeça e segure por cerca de 2 s para a esfera crescer; baixe os braços para lançá-la na direção da câmera. Você continua na imagem. |
 
 Relaxe a mão antes de repetir. Estalo e pinça usam movimento; as demais poses
 usam a duração configurada. O estalo é reconhecido pela imagem: **não usamos o microfone**.

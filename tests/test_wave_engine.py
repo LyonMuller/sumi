@@ -44,7 +44,7 @@ class WaveEngineTests(unittest.TestCase):
                     charging, charge, ball, pulse = seen if seen is not None else (False, 0.0, None, False)
                     engine.wave_obs = (stamp, charging, charge, ball)
                     engine.observation = (stamp, pulse, 1)
-                    engine.observation_effect = 'kamehameha'
+                    engine.observation_effect = effect
                     engine.gesture_progress = charge if charging else 0.0
             if calls in script:
                 engine.commands.put(script[calls])

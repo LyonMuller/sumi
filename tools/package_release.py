@@ -26,7 +26,7 @@ ASSETS = (
     'assets/README.md', 'assets/gestures/README.md',
     'assets/brand/readme-cover.png', 'assets/brand/app-icon.png', 'assets/brand/app-icon.ico',
     *(f'assets/gestures/{name}.png' for name in
-      ('teleporte', 'selo-uma-mao', 'poeira', 'digital', 'palma', 'portal', 'manual', 'clones', 'onda')),
+      ('teleporte', 'selo-uma-mao', 'poeira', 'digital', 'palma', 'portal', 'manual', 'clones', 'onda', 'esfera')),
     'assets/effects/README.md', 'assets/effects/tronco.png',
     'assets/sounds/CREDITS.md',
     *(f'assets/sounds/{name}.wav' for name in SOUNDS),

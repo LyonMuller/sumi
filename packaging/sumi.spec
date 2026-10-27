@@ -12,7 +12,7 @@ datas = [
     (str(root / 'work' / 'bundle-build.json'), '.'),
     (str(root / 'build' / 'video-output' / 'SumiVideoOutput'), 'video_output'),
 ]
-for name in ('teleporte.png', 'selo-uma-mao.png', 'poeira.png', 'digital.png', 'palma.png', 'portal.png', 'manual.png', 'clones.png', 'onda.png'):
+for name in ('teleporte.png', 'selo-uma-mao.png', 'poeira.png', 'digital.png', 'palma.png', 'portal.png', 'manual.png', 'clones.png', 'onda.png', 'esfera.png'):
     datas.append((str(root / 'assets' / 'gestures' / name), 'assets/gestures'))
 datas.append((str(root / 'assets' / 'effects' / 'tronco.png'), 'assets/effects'))
 for path in sorted((root / 'assets' / 'sounds').glob('*.wav')):

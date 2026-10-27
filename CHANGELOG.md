@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## Não lançado
+
+- **Esfera de energia.** Erga as duas mãos acima da cabeça para reunir uma esfera
+  gigante; baixe os braços para lançá-la na direção da câmera, com clarão e onda de choque.
+- **Sons dos efeitos.** Cada efeito tem som, também na chamada do Meet (opcional).
+  Sons próprios em `sons/`, na pasta de dados, substituem os embutidos.
+- **Meet automático.** A extensão encontra e vincula a reunião aberta sozinha, sem código.
+
 ## 0.5.0 — primeira versão do Sumi
 
 Suma da webcam com um gesto, com efeitos de ninja e anime, e reapareça quando quiser.

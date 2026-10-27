@@ -494,7 +494,8 @@ class Controller:
         if running:
             primary = ('Capturar fundo (4 s)' if phase == 'uncalibrated' else 'Confirmar fundo vazio'
                        if phase == 'confirm' else 'Reaparecer' if hidden else 'Dispensar clones' if clones else
-                       'Disparar onda' if LABELS.get(self.effect) == 'kamehameha' else 'Ativar efeito')
+                       'Disparar onda' if LABELS.get(self.effect) == 'kamehameha' else
+                       'Lançar esfera' if LABELS.get(self.effect) == 'genkidama' else 'Ativar efeito')
             primary_enabled = phase in PRIMARY_PHASES
             start_label = 'Parando…' if engine is not None and engine.stop.is_set() else 'Parar câmera'
             start_enabled = start_label == 'Parar câmera'

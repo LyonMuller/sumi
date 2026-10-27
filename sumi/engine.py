@@ -12,6 +12,7 @@ from .scene import Frame, Scene
 from .vision import Detector, Segmenter
 from .effects import Silhouette, TeleportEffect
 from .effects_energy import EnergyCharge
+from .effects_spirit import SpiritCharge
 from .effect_catalog import EFFECTS
 from .background import LiveBackground
 from .paths import resource_root
@@ -195,8 +196,11 @@ class Engine:
         clones_effect:TeleportEffect | None=None
         gate=HoldGate(self.settings.hold)
         seal_gate=HoldGate(self.settings.hold)
-        wave_fx=EnergyCharge()
+        # Charged effects: a live ball while the pose is held, then a one-shot `action` effect.
+        charges={'kamehameha':EnergyCharge(),'genkidama':SpiritCharge()}
+        wave_fx=charges['kamehameha']
         wave_was_charging=False
+        charge_sound='kamehameha-charge'
         arrival_message_at:float | None=None
         effect:TeleportEffect | None=None
         requested:float | None=None
@@ -239,6 +243,11 @@ class Engine:
                     silhouette=self.silhouette
                 height,width=frame.shape[:2]
                 gesture_mode='clones' if clones_on else self.effect_mode
+                if gesture_mode in charges and charges[gesture_mode] is not wave_fx:
+                    wave_fx.reset()
+                    wave_fx=charges[gesture_mode]
+                    if wave_was_charging: self.sounds.put(('stop',charge_sound))
+                    wave_was_charging=False
                 summon_requested=False
                 if not virtual_attempted:
                     virtual=self._open_virtual(width,height)
@@ -329,7 +338,7 @@ class Engine:
                     and scene.pending is None and scene.background is not None and effect is None and requested is None)
                 self.progress=(motion_progress if guide.motion and now-observed_at<.3 and observed_effect==gesture_mode else 0) if guide.motion else max(gate.progress,seal_gate.progress if clones_on else 0)
                 # Energy wave: the ball follows the hands while the charge pose is held (never part of `hidden`).
-                if (gesture_mode=='kamehameha' and calibration is None and scene.pending is None and scene.background is not None
+                if (gesture_mode in charges and calibration is None and scene.pending is None and scene.background is not None
                         and effect is None and requested is None and not scene.hidden
                         and now-wave_at<.3 and observed_effect==gesture_mode):
                     wave_subject=silhouette if silhouette is not None and now-silhouette.captured_at<=.5 and silhouette.frame.shape==frame.shape else None
@@ -337,11 +346,13 @@ class Engine:
                 elif requested is None and wave_fx.state!='idle':
                     wave_fx.update(now,None,0.0,False,None)
                 if wave_fx.charging and not wave_was_charging:
-                    self._set_message('Carregando a onda…')
-                    self.sounds.put(('loop','kamehameha-charge'))
+                    self._set_message('Reunindo energia…' if gesture_mode=='genkidama' else 'Carregando a onda…')
+                    charge_sound=f'{gesture_mode}-charge'
+                    self.sounds.put(('loop',charge_sound))
                 elif wave_was_charging and not wave_fx.charging and requested is None:
-                    self._set_message('A onda se desfez. Junte as mãos de novo para carregar.')
-                    self.sounds.put(('stop','kamehameha-charge'))
+                    self._set_message('A esfera se desfez. Erga as duas mãos de novo.' if gesture_mode=='genkidama'
+                                      else 'A onda se desfez. Junte as mãos de novo para carregar.')
+                    self.sounds.put(('stop',charge_sound))
                 wave_was_charging=wave_fx.charging
                 if summon_requested and clones_on and clones_effect is not None and effect is None:
                     fresh_now=silhouette if silhouette is not None and now-silhouette.captured_at<=0.5 else None
@@ -402,13 +413,13 @@ class Engine:
                                 effect=EFFECTS[self.effect_mode](silhouette if fresh and silhouette is not None else None,False,now,
                                                                   ball=ball,charge=wave_charge if fresh_hands else max(wave_fx.level,.7),
                                                                   shape=frame.shape[:2])
-                                self.sounds.put(('play','kamehameha-fire'))
-                                self._set_message('Onda disparada!')
+                                self.sounds.put(('play',f'{self.effect_mode}-fire'))
+                                self._set_message('Esfera lançada!' if self.effect_mode=='genkidama' else 'Onda disparada!')
                             except ValueError as error:
                                 self._set_message(str(error))
                         wave_fx.reset()
                         wave_was_charging=False
-                        self.sounds.put(('stop','kamehameha-charge'))
+                        self.sounds.put(('stop',charge_sound))
                         requested=None
                         gate.reset();seal_gate.reset()
                     else:

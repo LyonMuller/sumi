@@ -13,6 +13,9 @@ from .system import user_data_dir
 BUNDLED_EXTENSIONS = ('.wav',)
 OVERRIDE_EXTENSIONS_MAC = ('.wav', '.mp3', '.m4a', '.aiff')
 OVERRIDE_EXTENSIONS = ('.wav',)
+# Sounds that borrow another one until a file of their own is added.
+FALLBACKS = {'genkidama-charge': 'kamehameha-charge', 'genkidama-charge-loop': 'kamehameha-charge-loop',
+             'genkidama-fire': 'kamehameha-fire'}
 
 
 def _default_runner(args: list[str]):
@@ -33,6 +36,12 @@ class SoundBank:
         return OVERRIDE_EXTENSIONS_MAC if self.platform == 'darwin' else OVERRIDE_EXTENSIONS
 
     def path(self, name: str) -> Path | None:
+        found = self._path(name)
+        if found is None and name in FALLBACKS:
+            return self._path(FALLBACKS[name])
+        return found
+
+    def _path(self, name: str) -> Path | None:
         if not name or '/' in name or '\\' in name or name.startswith('.'):
             return None
         try:

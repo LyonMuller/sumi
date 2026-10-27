@@ -239,7 +239,7 @@ class EnergyCharge:
         x, y, size = self.pos
         p = 0.0 if self.state == 'charging' else min(1.0, (now - self.lost) / self.FIZZLE)
         level = self.level
-        radius = min(.3 * min(fh, fw), max(10.0, size * .95 * (.3 + .7 * level ** .75) * float(smooth((now - self.since) / .22)) * (1 - p) ** 2))
+        radius = self._radius(size, level, now, p, (fh, fw))
         gain = (1.0 - p) * (1.0 + .22 * float(smooth((level - .8) / .2)))
         f = flicker(now)
         person = self.cut[1] if self.cut is not None and self.cut[0].frame.shape == live.shape else None
@@ -265,6 +265,10 @@ class EnergyCharge:
         self._body(out, x, y, radius, now, gain, f, p, level)
         self._sparks(out, x, y, radius, now, gain, p, level)
         return out
+
+    def _radius(self, size: float, level: float, now: float, p: float, shape: tuple[int, int]) -> float:
+        """Ball radius for this hand size and charge, growing in at the start and shrinking as it fizzles."""
+        return min(.3 * min(shape), max(10.0, size * .95 * (.3 + .7 * level ** .75) * float(smooth((now - self.since) / .22)) * (1 - p) ** 2))
 
     def _body(self, out: Frame, x: float, y: float, radius: float, now: float, gain: float, f: float,
               p: float, level: float) -> None:

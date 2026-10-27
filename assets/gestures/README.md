@@ -13,6 +13,7 @@ Estas imagens são usadas somente na interface e no README:
 | `manual.png` | Ativação manual (botão) |
 | `clones.png` | Selo de mãos cruzadas (clones de sombra) |
 | `onda.png` | Mãos juntas em concha na frente do peito, carregando a onda de energia |
+| `esfera.png` | Mãos erguidas com a esfera de energia sobre a cabeça (provisória: montada a partir de `portal.png` com a esfera desenhada pelo próprio efeito) |
 
 Todas usam o mesmo personagem, quadradas (768 px) e com fundo transparente.
 Os PNGs preservam transparência e proporção. As instruções e o vínculo com os

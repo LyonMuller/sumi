@@ -29,6 +29,8 @@ GUIDES: dict[str, GestureGuide] = {
         ('Mostre as duas mãos abertas para a câmera.','Deixe uma mão de cada lado do rosto, sem cobri-lo.','Segure até completar a barra; baixe as mãos antes de repetir.'),'portal.png'),
     'kamehameha': GestureGuide('wave','Onda de energia','Junte as duas mãos em concha na frente do peito para carregar; abra as mãos e empurre para disparar.',
         ('Fique com o rosto visível e junte as duas mãos em concha, palma com palma, abaixo da boca (na frente do peito ou ao lado).','Segure por cerca de 1 s: uma esfera de energia cresce entre as palmas e a barra mostra a carga.','Com a carga completa, abra as mãos e empurre para a frente para disparar. Se tirar as mãos do quadro sem abrir, a esfera se desfaz. Baixe as mãos antes de carregar de novo.'),'onda.png',True),
+    'genkidama': GestureGuide('spirit','Esfera de energia','Erga as duas mãos abertas acima da cabeça para reunir energia; baixe os braços para lançar.',
+        ('Afaste-se um pouco da câmera para que as mãos erguidas apareçam no quadro, com o rosto visível.','Erga as duas mãos abertas acima da cabeça e segure: uma esfera gigante se forma sobre você e cresce por cerca de 2 s.','Com a carga completa, baixe os braços com força para lançar a esfera na direção da câmera. Baixar antes da metade da carga só desfaz a esfera.'),'esfera.png',True),
     'instant': GestureGuide('manual','Ativação manual','Use Ativar efeito ou Reaparecer. F8 sempre restaura a imagem.',
         ('Prepare e confirme o fundo vazio.','Clique Ativar efeito para desaparecer e Reaparecer para voltar.','Este modo não dispara por gestos. Restaurar ou F8 devolve a imagem ao vivo.'),'manual.png'),
 }

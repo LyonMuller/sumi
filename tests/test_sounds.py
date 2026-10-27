@@ -165,11 +165,20 @@ class SoundTests(unittest.TestCase):
     def test_every_effect_has_a_bundled_sound(self):
         bank = SoundBank(self.over, ROOT / 'assets' / 'sounds')
         included = set(release_files())
-        for name in (*(k for k in EFFECTS if k != 'kamehameha'), *EXTRA):
+        # Charged effects (`action`) play `<name>-charge` and `<name>-fire` instead of their own name.
+        for name in (*(k for k, e in EFFECTS.items() if not getattr(e, 'action', False)), *EXTRA):
             path = bank.path(name)
             self.assertIsNotNone(path, name)
             self.assertIn(path, included, name)
             self.assertLess(path.stat().st_size, 250_000, name)
+
+
+    def test_spirit_bomb_borrows_the_wave_sounds_until_it_has_its_own(self):
+        bank = SoundBank(self.over, ROOT / 'assets' / 'sounds')
+        self.assertEqual(bank.path('genkidama-fire'), bank.path('kamehameha-fire'))
+        self.assertEqual(bank.path('genkidama-charge'), bank.path('kamehameha-charge'))
+        (self.over / 'genkidama-fire.wav').write_bytes(b'x')
+        self.assertEqual(bank.path('genkidama-fire'), self.over / 'genkidama-fire.wav')
 
 
 if __name__ == '__main__':
