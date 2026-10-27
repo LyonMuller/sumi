@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 <head><meta charset="utf-8"><title>Sumi · Meet</title><link rel="stylesheet" href="popup.css"></head>
 <body>
-<h1>Vincular esta aba</h1>
-<p>Abra sua reunião do Meet. No Sumi, copie o código em Configurações.</p>
-<label for="token">Código de conexão local</label>
-<input id="token" type="password" autocomplete="off" maxlength="150">
-<button id="pair">Vincular esta aba do Meet</button>
-<p id="status" role="status">A saída automática começa desligada no aplicativo.</p>
-<p class="note">Quando ativada, fecha somente esta aba após o desaparecimento. Não encerra a reunião dos outros participantes.</p>
+<h1>Sumi · Meet</h1>
+<p id="app" role="status">Verificando o Sumi…</p>
+<p id="meeting"></p>
+<p class="note">Não precisa de código: com o Sumi aberto, a reunião do Meet é vinculada sozinha. Os sons dos efeitos entram no seu microfone na chamada (se você estiver mudo, ninguém ouve). A aba só é fechada quando você ativa a saída automática no Sumi.</p>
 <script type="module" src="popup.js"></script>
 </body></html>

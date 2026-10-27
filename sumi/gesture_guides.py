@@ -27,8 +27,8 @@ GUIDES: dict[str, GestureGuide] = {
         ('Mostre uma mão aberta ao lado do rosto, com a palma voltada para a câmera.','Deixe os dedos confortavelmente estendidos e mantenha a mão parada até completar a barra.','Baixe ou feche a mão antes de repetir. Não é preciso acenar.'),'palma.png'),
     'portal': GestureGuide('palms','Abrir o portal','Mostre as duas palmas abertas, uma de cada lado do rosto.',
         ('Mostre as duas mãos abertas para a câmera.','Deixe uma mão de cada lado do rosto, sem cobri-lo.','Segure até completar a barra; baixe as mãos antes de repetir.'),'portal.png'),
-    'kamehameha': GestureGuide('wave','Onda de energia','Junte as mãos ao lado do corpo para carregar e empurre para a frente para disparar.',
-        ('Fique com o rosto visível e leve as duas mãos juntas, em concha, para um lado do corpo (cintura ou quadril).','Segure por cerca de 1 s: uma esfera de energia cresce entre as palmas e a barra mostra a carga.','Empurre as mãos abertas, juntas, para a frente (ou para o centro) para disparar. Se baixar as mãos sem empurrar, a esfera se desfaz. Baixe as mãos antes de carregar de novo.'),'onda.png',True),
+    'kamehameha': GestureGuide('wave','Onda de energia','Junte as duas mãos em concha na frente do peito para carregar; abra as mãos e empurre para disparar.',
+        ('Fique com o rosto visível e junte as duas mãos em concha, palma com palma, abaixo da boca (na frente do peito ou ao lado).','Segure por cerca de 1 s: uma esfera de energia cresce entre as palmas e a barra mostra a carga.','Com a carga completa, abra as mãos e empurre para a frente para disparar. Se tirar as mãos do quadro sem abrir, a esfera se desfaz. Baixe as mãos antes de carregar de novo.'),'onda.png',True),
     'instant': GestureGuide('manual','Ativação manual','Use Ativar efeito ou Reaparecer. F8 sempre restaura a imagem.',
         ('Prepare e confirme o fundo vazio.','Clique Ativar efeito para desaparecer e Reaparecer para voltar.','Este modo não dispara por gestos. Restaurar ou F8 devolve a imagem ao vivo.'),'manual.png'),
 }

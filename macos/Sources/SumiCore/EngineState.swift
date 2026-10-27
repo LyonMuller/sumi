@@ -38,6 +38,9 @@ public struct EngineState: Decodable, Equatable, Sendable {
     public var meetAvailable: Bool
     public var meetConnected: Bool
     public var meetStatus: String
+    public var meetExtension: Bool
+    public var sounds: Bool
+    public var callSounds: Bool
     public var mainNotice: String
     public var leaveEnabled: Bool
     public var leaveDelay: String

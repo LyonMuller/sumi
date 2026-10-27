@@ -198,8 +198,14 @@ class App:
             fg_color=c['surface'], hover_color=c['line'], text_color=c['text'], font=font).grid(row=9, column=0, sticky='ew', pady=(14, 8))
         ctk.CTkButton(self.right, text='Abrir pasta da extensão', command=self.open_extension, height=34, corner_radius=10,
             fg_color=c['surface'], hover_color=c['line'], text_color=c['text'], font=font).grid(row=10, column=0, sticky='ew')
-        ctk.CTkButton(self.right, text='Copiar código de conexão', command=self.copy_meet_code, height=34, corner_radius=10,
-            fg_color=c['surface'], hover_color=c['line'], text_color=c['text'], font=font).grid(row=11, column=0, sticky='ew', pady=(8, 0))
+        self.sounds_on = tk.BooleanVar(value=state.sounds)
+        self.call_sounds_on = tk.BooleanVar(value=state.call_sounds)
+        sounds_row = ctk.CTkFrame(self.right, fg_color='transparent')
+        sounds_row.grid(row=11, column=0, sticky='w', pady=(12, 0))
+        ctk.CTkSwitch(sounds_row, text='Sons dos efeitos', variable=self.sounds_on,
+            command=lambda: self.controller.set_sounds(self.sounds_on.get()), progress_color=c['accent'], text_color=c['text'], font=font).pack(anchor='w')
+        ctk.CTkSwitch(sounds_row, text='Tocar os sons na chamada (Meet)', variable=self.call_sounds_on,
+            command=lambda: self.controller.set_call_sounds(self.call_sounds_on.get()), progress_color=c['accent'], text_color=c['text'], font=font).pack(anchor='w', pady=(6, 0))
         self.meet_status = tk.StringVar(value=state.meet_status)
         self.meet_label = ctk.CTkLabel(self.right, textvariable=self.meet_status, wraplength=315, text_color=c['muted'], font=(FONT, 12), justify='left')
         self.meet_label.grid(row=12, column=0, sticky='ew', pady=(12, 0))
@@ -287,10 +293,10 @@ class App:
         set_window_icon(help_window)
         help_window.geometry('580x430')
         help_window.transient(self.root)
-        text = ('A extensão só serve para sair automaticamente.\n\n'
-                '1. No Chrome/Edge, abra Extensões, ative Modo do desenvolvedor e carregue a pasta meet_extension sem compactação.\n\n'
-                '2. Copie o código de conexão no aplicativo. Na aba da reunião, abra a extensão e clique Vincular.\n\n'
-                '3. Ative Sair do Meet após desaparecer. F8 cancela durante a contagem.')
+        text = ('A extensão toca os sons dos efeitos na chamada e permite sair automaticamente.\n\n'
+                '1. No Chrome/Edge, abra Extensões, ative Modo do desenvolvedor e carregue a pasta da extensão sem compactação.\n\n'
+                '2. Pronto: com o Sumi aberto, a reunião do Meet é vinculada sozinha. Não há código para copiar.\n\n'
+                '3. Opcional: ative Sair do Meet após desaparecer. F8 cancela durante a contagem.')
         ctk.CTkLabel(help_window, text=text, wraplength=510, justify='left', font=(FONT, 14), text_color=COLORS['text']).pack(padx=26, pady=26, anchor='w')
         ctk.CTkButton(help_window, text='Abrir guia completo', command=lambda: self.open(resource_root() / 'GUIA_RAPIDO.html'),
             fg_color=COLORS['accent'], hover_color=COLORS['accent_hover'], corner_radius=12).pack(padx=26, anchor='w')
@@ -300,13 +306,6 @@ class App:
             open_path(path)
         except OSError:
             self.status.set('Não consegui abrir o arquivo.')
-
-    def copy_meet_code(self) -> None:
-        code = self.controller.pairing_code()
-        if code is None:
-            return
-        self.root.clipboard_clear()
-        self.root.clipboard_append(code)
 
     def open_extension(self) -> None:
         folder = self.controller.extension_path()

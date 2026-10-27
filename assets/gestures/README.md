@@ -12,7 +12,7 @@ Estas imagens são usadas somente na interface e no README:
 | `portal.png` | Duas palmas nas laterais do rosto |
 | `manual.png` | Ativação manual (botão) |
 | `clones.png` | Selo de mãos cruzadas (clones de sombra) |
-| `onda.png` | Mãos juntas ao lado do corpo, carregando a onda de energia |
+| `onda.png` | Mãos juntas em concha na frente do peito, carregando a onda de energia |
 
 Todas usam o mesmo personagem, quadradas (768 px) e com fundo transparente.
 Os PNGs preservam transparência e proporção. As instruções e o vínculo com os

@@ -7,22 +7,25 @@
 - O fundo preparado fica em memória durante a sessão. Não é salvo como foto.
 - user_settings.json guarda escolhas de câmera/qualidade/efeito; pode incluir
   o identificador local da webcam. Não faz parte do Git ou pacote.
-- .meet_pairing_key guarda o segredo de conexão local. Não compartilhe esse
-  arquivo ou seu conteúdo. Apagá-lo com o aplicativo fechado gera uma nova
-  chave na próxima abertura e exige novo vínculo com a extensão.
 - No executável, esses arquivos ficam em `%LOCALAPPDATA%\Sumi` (Windows) ou
   `~/Library/Application Support/Sumi` (macOS), separados da instalação e
   preservados ao desinstalar. Executando os fontes, continuam na
-  pasta do projeto. O pacote nunca inclui as preferências ou a chave do criador.
+  pasta do projeto. O pacote nunca inclui as preferências do criador.
 - O executável único extrai recursos em uma pasta temporária e remove essa pasta
   ao encerrar normalmente. A extensão opcional é exportada para a pasta de dados
   somente quando você solicita abrir sua pasta; não é instalada no navegador.
 - Uma falha ao abrir pode gerar `startup-error.log` nessa pasta, com detalhes
   técnicos e caminhos locais. Confira o conteúdo antes de compartilhar esse log.
-- A extensão guarda a chave e a aba vinculada no armazenamento local do
-  navegador. Não usa sincronização. Desinstalar a extensão remove esses dados.
-- A extensão não solicita câmera ou microfone; seu código não lê chat, áudio,
-  vídeo ou DOM da reunião. A permissão de domínio Meet é mais ampla que o uso
+- A extensão guarda só o último estado da conexão (app aberto, código da
+  reunião) no armazenamento local do navegador. Não usa sincronização.
+- A extensão não pede permissão de câmera ou microfone e não lê chat, vídeo ou
+  DOM da reunião. Quando o próprio Meet abre o seu microfone, a extensão mistura
+  os sons dos efeitos a ele no navegador, para que entrem na chamada. O áudio
+  não é gravado, lido nem enviado a outro lugar. Desligue em Sons → Tocar os
+  sons na chamada.
+- Os sons dos efeitos também tocam no seu Mac/PC. São sons originais gerados
+  pelo projeto; você pode trocá-los pondo arquivos com o mesmo nome em `sons/`
+  na pasta de dados. A permissão de domínio Meet é mais ampla que o uso
   atual: futuras alterações precisam de revisão, não de confiança automática.
 - A ponte escuta somente em 127.0.0.1:49321. O navegador consulta essa ponte
   local; não há servidor externo nosso. A instalação dos fontes usa internet para

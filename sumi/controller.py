@@ -9,6 +9,7 @@ from queue import Empty, Queue
 from threading import Thread
 from time import monotonic
 from typing import Callable
+import sys
 import webbrowser
 
 from .devices import CameraDevice, list_cameras
@@ -19,6 +20,7 @@ from .meet import LeaveCountdown, MeetBridge
 from .paths import extension_folder
 from .preferences import BACKGROUND_DEFAULT_REVISION, apply_background_default, load_preferences, save_preferences
 from .scene import Frame
+from .sounds import SoundBank, SoundPlayer
 from .system import camera_permission_hint, output_choices
 
 PHASES = {
@@ -91,6 +93,9 @@ class ViewState:
     frame: Frame | None = field(default=None, repr=False)
     clones: bool = False
     clones_count: int = 0
+    sounds: bool = True
+    call_sounds: bool = True
+    meet_extension: bool = False
 
     def public(self) -> dict[str, object]:
         """JSON-ready copy without the video frame."""
@@ -106,7 +111,8 @@ class Controller:
                  engine_factory: Callable[[Settings], Engine] = Engine,
                  camera_lister: Callable[[], list[CameraDevice]] = list_cameras,
                  bridge_factory: Callable[[], MeetBridge] | None = MeetBridge,
-                 open_url: Callable[[str], object] = webbrowser.open) -> None:
+                 open_url: Callable[[str], object] = webbrowser.open,
+                 player_factory: Callable[[SoundBank], SoundPlayer] = SoundPlayer) -> None:
         self.preferences_path = preferences_path
         self.engine_factory = engine_factory
         self.camera_lister = camera_lister
@@ -127,6 +133,11 @@ class Controller:
         self.hold = choose(self.preferences.get('hold'), HOLD_TIMES, '1.0')
         self.output = choose(self.preferences.get('backend'), list(output_choices()), 'OBS Virtual Camera')
         self.dynamic = self.preferences.get('background', 'static') == 'live'
+        self.sounds = self.preferences.get('sounds', True) is not False
+        self.call_sounds = self.preferences.get('call_sounds', True) is not False
+        self.sound_bank = SoundBank()
+        self.player = player_factory(self.sound_bank)
+        self.player.enabled = self.sounds
         self.camera = 'Buscando sua câmera…'
         self.state_text = 'Câmera desligada'
         self.step = 'Sua câmera só liga quando você clicar em Iniciar.'
@@ -144,12 +155,15 @@ class Controller:
                 self.bridge_error = f'Integração Meet indisponível: {error}'
         else:
             self.bridge_error = 'Integração Meet desligada.'
+        if self.bridge is not None:
+            self.bridge.sound_path = self.sound_bank.path
+            self.bridge.call_sounds = self.call_sounds
         self.countdown = LeaveCountdown()
         self.bound_target = None
         self.leave_enabled = False
         self.leave_delay = '2'
         self.leave_note = ''
-        self.meet_status = self.bridge_error or 'Extensão não vinculada. O vídeo funciona sem ela.'
+        self.meet_status = self.bridge_error or 'Extensão não detectada. O vídeo funciona sem ela.'
         self.main_notice = ''
 
     # Preferences and options ------------------------------------------------
@@ -179,6 +193,23 @@ class Controller:
         if self.engine is not None and self.engine.running:
             self.engine.commands.put('background:live' if self.dynamic else 'background:static')
         self.preferences['background'] = 'live' if self.dynamic else 'static'
+        self._save('Não consegui salvar a preferência; a troca continua válida nesta sessão.')
+
+    def set_sounds(self, enabled: bool) -> None:
+        self.sounds = bool(enabled)
+        self.player.enabled = self.sounds
+        if not self.sounds:
+            self.player.stop_all()
+        self.preferences['sounds'] = self.sounds
+        self._save('Não consegui salvar a preferência; a troca continua válida nesta sessão.')
+
+    def set_call_sounds(self, enabled: bool) -> None:
+        self.call_sounds = bool(enabled)
+        if self.bridge is not None:
+            if not self.call_sounds:
+                self.bridge.emit('stop_all')
+            self.bridge.call_sounds = self.call_sounds
+        self.preferences['call_sounds'] = self.call_sounds
         self._save('Não consegui salvar a preferência; a troca continua válida nesta sessão.')
 
     def _set_option(self, name: str, value: str, allowed: tuple[str, ...] | list[str]) -> None:
@@ -256,6 +287,7 @@ class Controller:
         self.preferences = {'camera_path': device.path, 'resolution': self.resolution, 'backend': self.output,
                             'hold': self.hold, 'effect': self.effect,
                             'background': 'live' if self.dynamic else 'static',
+                            'sounds': self.sounds, 'call_sounds': self.call_sounds,
                             # Keep the marker so the next launch respects the chosen background.
                             'background_default_revision': BACKGROUND_DEFAULT_REVISION}
         try:
@@ -281,6 +313,7 @@ class Controller:
 
     def stop(self) -> None:
         self.countdown.cancel()
+        self._silence()
         if self.bridge is not None:
             self.bridge.cancel()
         if self.engine is not None:
@@ -327,11 +360,34 @@ class Controller:
         self.status = ('Pronto para iniciar. No Meet, escolha OBS Virtual Camera e desative desfoque/fundo virtual. '
                        'Deixe a câmera virtual parada no OBS.')
 
-    def pairing_code(self) -> str | None:
-        if self.bridge is None:
-            return None
-        self.leave_note = 'Código copiado. Cole na extensão aberta na aba do Meet e clique Vincular.'
-        return self.bridge.token
+    # Sounds -------------------------------------------------------------------
+
+    def _silence(self) -> None:
+        self.player.stop_all()
+        if self.bridge is not None:
+            self.bridge.emit('stop_all')
+
+    def _poll_sounds(self) -> None:
+        engine = self.engine
+        queue = getattr(engine, 'sounds', None)
+        if queue is None:
+            return
+        while True:
+            try:
+                action, name = queue.get_nowait()
+            except Empty:
+                return
+            if action == 'stop_all':
+                self.player.stop_all()
+            elif action == 'loop':
+                self.player.loop(name)
+            elif action == 'stop':
+                self.player.stop(name)
+            else:
+                self.player.play(name)
+            if self.bridge is not None:
+                self.bridge.emit(action, name)
+            print(f'[som] {action} {name}', file=sys.stderr, flush=True)
 
     def extension_path(self) -> Path | None:
         try:
@@ -345,7 +401,7 @@ class Controller:
         self.leave_enabled = bool(enabled)
         if self.leave_enabled and (self.bridge is None or not self.bridge.connected()):
             self.leave_enabled = False
-            self.leave_note = 'Vincule uma aba do Meet pela extensão antes de ativar a saída automática.'
+            self.leave_note = 'Abra a reunião no Meet com a extensão instalada antes de ativar a saída automática.'
         else:
             self.leave_note = ('Saída automática ativada somente para a aba vinculada.' if self.leave_enabled
                                else 'Saída automática desligada.')
@@ -431,6 +487,7 @@ class Controller:
                     self.hint = 'Baixe ou relaxe a mão por um instante; depois faça o gesto para iniciar a barra.'
                 elif engine.message.startswith(('Não ', 'Falha', 'Recorte', 'Modelo')):
                     self.hint = engine.message
+        self._poll_sounds()
         self._poll_meet()
         hidden = engine is not None and engine.hidden
         clones = engine is not None and getattr(engine, 'clones', False) is True
@@ -464,6 +521,8 @@ class Controller:
             virtual_active=engine is not None and engine.virtual_active,
             meet_available=self.bridge is not None,
             meet_connected=self.bridge is not None and self.bridge.connected(),
+            meet_extension=self.bridge is not None and self.bridge.extension_connected(),
+            sounds=self.sounds, call_sounds=self.call_sounds,
             meet_status=self.meet_status, main_notice=self.main_notice,
             leave_enabled=self.leave_enabled, leave_delay=self.leave_delay,
             leave_countdown=(None if self.countdown.deadline is None

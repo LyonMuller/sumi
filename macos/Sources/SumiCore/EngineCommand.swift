@@ -14,13 +14,14 @@ public enum EngineCommand: Equatable, Sendable {
     case setLeaveDelay(String)
     case setBackground(dynamic: Bool)
     case setLeave(enabled: Bool)
+    case setSounds(enabled: Bool)
+    case setCallSounds(enabled: Bool)
     case refreshCameras
     case startCamera
     case stopCamera
     case primary
     case engine(Action)
     case prepareMeet
-    case pairingCode
     case extensionPath
     case shutdown
 
@@ -36,13 +37,14 @@ public enum EngineCommand: Equatable, Sendable {
         case .setLeaveDelay(let value): message["cmd"] = "set_leave_delay"; message["value"] = value
         case .setBackground(let dynamic): message["cmd"] = "set_background"; message["dynamic"] = dynamic
         case .setLeave(let enabled): message["cmd"] = "set_leave"; message["enabled"] = enabled
+        case .setSounds(let enabled): message["cmd"] = "set_sounds"; message["enabled"] = enabled
+        case .setCallSounds(let enabled): message["cmd"] = "set_call_sounds"; message["enabled"] = enabled
         case .refreshCameras: message["cmd"] = "refresh_cameras"
         case .startCamera: message["cmd"] = "start_camera"
         case .stopCamera: message["cmd"] = "stop_camera"
         case .primary: message["cmd"] = "primary"
         case .engine(let action): message["cmd"] = "engine"; message["name"] = action.rawValue
         case .prepareMeet: message["cmd"] = "prepare_meet"
-        case .pairingCode: message["cmd"] = "pairing_code"
         case .extensionPath: message["cmd"] = "extension_path"
         case .shutdown: message["cmd"] = "shutdown"
         }

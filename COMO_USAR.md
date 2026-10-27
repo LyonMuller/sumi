@@ -47,28 +47,29 @@ No Mac, a opção Só prévia funciona sem o OBS.
 
 ## Sair do Meet automaticamente (opcional)
 
-A extensão não participa do vídeo; ela só fecha a aba que você vinculou.
+A extensão não participa do vídeo. Ela toca os sons dos efeitos na chamada e,
+se você ativar, fecha a aba da reunião quando você desaparece.
 
-1. No app, abra Configurar → Meet → Abrir pasta da extensão (no Mac, Ajustes › Meet › Mostrar pasta da extensão).
+1. No app, abra Configurar → Meet → Abrir pasta da extensão (no Mac, Ajustes › Meet › Instalar no Chrome…, que já abre a página de extensões e copia o caminho da pasta).
 2. No Chrome, abra `chrome://extensions`; no Edge, `edge://extensions`.
 3. Ative Modo do desenvolvedor, escolha Carregar sem compactação e selecione a pasta aberta pelo app.
-4. No app, copie o código de conexão. Na aba da reunião, abra a extensão, cole o código e clique em Vincular.
-5. Ative Sair do Meet após desaparecer e escolha a espera de 2, 3 ou 5 segundos.
+4. Pronto: com o Sumi aberto, a reunião do Meet é vinculada sozinha. Não há código para copiar.
+5. Opcional: ative Sair do Meet após desaparecer e escolha a espera de 2, 3 ou 5 segundos.
 
 Restaurar cancela durante a contagem. Depois que a extensão recebe o pedido,
 pode ser tarde para cancelar. A extensão fecha somente a aba vinculada; não encerra
 a reunião dos outros participantes. O recurso começa desligado a cada abertura.
 
-Ao atualizar o app, abra a pasta da extensão da nova versão e recarregue-a no
-navegador. Os arquivos ficam numa pasta permanente do seu usuário, mesmo no .exe único.
+Ao atualizar o app, recarregue a extensão em `chrome://extensions`. A pasta
+não muda entre versões. Os arquivos ficam numa pasta permanente do seu usuário, mesmo no .exe único.
 A extensão não está publicada na Chrome Web Store ou na loja do Edge.
 
 ## Dados locais e remoção
 
-Configurações, chave e eventual log de falha ficam em `%LOCALAPPDATA%\Sumi` no Windows
+Configurações, sons personalizados (`sons/`) e eventual log de falha ficam em `%LOCALAPPDATA%\Sumi` no Windows
 e em `~/Library/Application Support/Sumi` no macOS.
-Não compartilhe a chave ou as preferências. Para redefinir o app, feche-o e remova
-somente `user_settings.json`; para refazer o vínculo, remova `.meet_pairing_key` e vincule de novo.
+Não compartilhe as preferências. Para redefinir o app, feche-o e remova
+somente `user_settings.json`.
 
 No Windows, a versão instalada pode ser removida em Configurações → Aplicativos.
 O desinstalador preserva as preferências. Na versão de arquivo único, basta fechar

@@ -53,7 +53,24 @@ private struct MeetSettings: View {
         if let state = engine.state {
             Form {
                 Section {
-                    LabeledContent("Situação", value: state.meetStatus)
+                    LabeledContent("Extensão") {
+                        Text(state.meetConnected ? "Reunião vinculada" : state.meetExtension ? "Conectada" : "Não detectada")
+                            .foregroundStyle(state.meetConnected ? .green : state.meetExtension ? .primary : .secondary)
+                    }
+                    Text(state.meetStatus).font(.caption).foregroundStyle(.secondary)
+                } footer: {
+                    Text("Sem código: com o Sumi aberto, a reunião aberta no Meet é vinculada sozinha.")
+                }
+                Section("Sons") {
+                    Toggle("Sons dos efeitos", isOn: Binding(
+                        get: { state.sounds }, set: { engine.perform(.setSounds(enabled: $0)) }))
+                    Toggle("Tocar os sons na chamada", isOn: Binding(
+                        get: { state.callSounds }, set: { engine.perform(.setCallSounds(enabled: $0)) }))
+                        .disabled(!state.meetAvailable)
+                    Text("Na chamada, os sons entram no seu microfone pelo Meet. Se você estiver mudo, ninguém ouve. Para usar seus próprios sons, ponha arquivos com o mesmo nome em ~/Library/Application Support/Sumi/sons.")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                Section {
                     Toggle("Sair do Meet depois de desaparecer", isOn: Binding(
                         get: { state.leaveEnabled },
                         set: { engine.perform(.setLeave(enabled: $0)) }))
@@ -63,37 +80,36 @@ private struct MeetSettings: View {
                     }
                     .disabled(!state.meetAvailable)
                 } footer: {
-                    Text("A saída automática só age na aba do Meet vinculada pela extensão. Restaurar cancela a contagem.")
+                    Text("A saída automática só fecha a aba da reunião vinculada. Restaurar cancela a contagem.")
                 }
-                Section("Extensão do Chrome") {
-                    Button("Mostrar pasta da extensão") {
-                        Task {
-                            do {
-                                if let path = try await engine.send(.extensionPath) {
-                                    NSWorkspace.shared.activateFileViewerSelecting([URL(filePath: path)])
-                                }
-                            } catch { engine.show(error.localizedDescription) }
-                        }
-                    }
-                    Button("Copiar código de vínculo") {
-                        Task {
-                            do {
-                                if let code = try await engine.send(.pairingCode) {
-                                    NSPasteboard.general.clearContents()
-                                    NSPasteboard.general.setString(code, forType: .string)
-                                    engine.show("Código copiado. Cole na extensão aberta na aba do Meet.")
-                                }
-                            } catch { engine.show(error.localizedDescription) }
-                        }
-                    }
-                    .disabled(!state.meetAvailable)
-                    Text("No Chrome: chrome://extensions → Modo do desenvolvedor → Carregar sem compactação → escolha a pasta.")
+                Section("Instalar a extensão no Chrome") {
+                    Button("Instalar no Chrome…") { install() }
+                    Text("Abre a página de extensões do Chrome e mostra a pasta no Finder (o caminho fica copiado). Ative Modo do desenvolvedor, clique em Carregar sem compactação e escolha a pasta. Só é preciso fazer isso uma vez.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
             .formStyle(.grouped)
         } else {
             EngineNotReady()
+        }
+    }
+
+    private func install() {
+        Task {
+            do {
+                guard let path = try await engine.send(.extensionPath) else { return }
+                let folder = URL(filePath: path)
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(path, forType: .string)
+                NSWorkspace.shared.activateFileViewerSelecting([folder])
+                let browsers = ["com.google.Chrome", "com.microsoft.edgemac", "com.brave.Browser", "company.thebrowser.Browser"]
+                if let browser = browsers.lazy.compactMap({ NSWorkspace.shared.urlForApplication(withBundleIdentifier: $0) }).first,
+                   let page = URL(string: browser.path.contains("Edge") ? "edge://extensions" : "chrome://extensions") {
+                    try await NSWorkspace.shared.open([page], withApplicationAt: browser,
+                                                      configuration: NSWorkspace.OpenConfiguration())
+                }
+                engine.show("Pasta da extensão copiada. No Chrome: Modo do desenvolvedor → Carregar sem compactação.")
+            } catch { engine.show(error.localizedDescription) }
         }
     }
 }

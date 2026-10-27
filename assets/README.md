@@ -17,3 +17,4 @@ horizontais. O ICO inclui 16, 24, 32, 48, 64, 128 e 256 px. Para reexportá-lo:
 
 O exportador enquadra a região visível do símbolo para evitar ícones pequenos
 por excesso de margem transparente. Não coloque capturas reais de webcam aqui.
+- `sounds/`: efeitos sonoros de fontes CC0 (domínio público), listadas em `sounds/CREDITS.md`.

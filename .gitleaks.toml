@@ -1,0 +1,8 @@
+# The "key" in the Meet extension manifest is the extension's public key (it pins the
+# extension ID). It is not a secret; the private key is never in the repository.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Chrome extension public key"
+paths = ['''meet_extension/manifest\.json''']

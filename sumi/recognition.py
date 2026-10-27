@@ -73,11 +73,14 @@ def portal_pose(hands: Sequence[Hand], face: Face) -> bool:
 
 PALM = (0, 5, 9, 13, 17)
 WAVE_CHARGE_SECONDS = 1.2   # holding the cupped hands this long gives a full charge
-WAVE_MIN_CHARGE = .35       # a push before this much charge is only a gesture, not a shot
-WAVE_GRACE = .25            # the pose may flicker this long without dropping the charge
-WAVE_WINDOW = .6            # the push has to start within this long after the last charged frame
-WAVE_GROWTH = 1.15          # hands this much larger than while charging: pushed at the camera
-WAVE_SHIFT = .5             # ... or this many face widths closer to the middle of the body
+WAVE_MIN_CHARGE = .35       # opening before this much charge is only a gesture, not a shot
+WAVE_FULL_CHARGE = .85      # tracking lost after this much charge (and growing hands) still fires
+WAVE_GRACE = .5             # the pose may flicker this long without dropping the ball
+WAVE_WINDOW = 1.0           # the release has to come within this long after the last charged frame
+WAVE_GROWTH = 1.12          # hands this much larger than a moment ago: pushed at the camera
+WAVE_OPEN_MARGIN = .06      # opening = finger curl this far above the curl while charging ...
+WAVE_OPEN_CURL = .96        # ... but never needing more than this
+WAVE_MAX_GAP = .5           # a frame gap longer than this resets the recognizer
 
 
 @dataclass(frozen=True)
@@ -103,44 +106,63 @@ def finger_curl(hand: Hand) -> float:
     return sum(ratios)/4
 
 
+def _face_ok(face: Face) -> bool:
+    return face.height >= 20 and face.width >= 20 and all(isfinite(v) for v in (face.x, face.y, face.width, face.height))
+
+
 def wave_ball(hands: Sequence[Hand], face: Face, slack: float = 1.0) -> Ball | None:
     """Two similar hands with palms and wrists together, as large as hands near this face."""
-    if len(hands) != 2 or not all(valid_hand(hand) for hand in hands):
-        return None
-    if not (face.height >= 20 and face.width >= 20 and all(isfinite(v) for v in (face.x, face.y, face.width, face.height))):
+    if len(hands) != 2 or not all(valid_hand(hand) for hand in hands) or not _face_ok(face):
         return None
     a, b = hands
     pa, pb = distance(a, 0, 9), distance(b, 0, 9)
     size = (pa+pb)/2
-    if not (.55 < pa/pb < 1.8 and .15 < size/face.height < 1.4):
+    if not (.45 < pa/pb < 2.2 and .12 < size/face.height < 1.6):
         return None
     ca, cb = palm_centre(a), palm_centre(b)
-    if dist(ca, cb) > 1.7*size*slack or dist((a[0].x, a[0].y), (b[0].x, b[0].y)) > 1.6*size*slack:
+    if dist(ca, cb) > 2.1*size*slack or dist((a[0].x, a[0].y), (b[0].x, b[0].y)) > 2.0*size*slack:
         return None
     return Ball((ca[0]+cb[0])/2, (ca[1]+cb[1])/2, size)
 
 
+def hand_ball(hand: Hand) -> Ball:
+    """The ball when only one of the two hands is tracked: at the palm of that hand."""
+    centre = palm_centre(hand)
+    return Ball(centre[0], centre[1], distance(hand, 0, 9))
+
+
+def charge_hand(hand: Hand, face: Face) -> bool:
+    """One hand that could be holding the charge: below the mouth, hand-sized, relaxed (neither flat nor a fist)."""
+    if not valid_hand(hand) or not _face_ok(face):
+        return False
+    x, y = palm_centre(hand)
+    if not (.12 < distance(hand, 0, 9)/face.height < 1.6 and y > face.y+face.height*.6 and y < face.y+face.height*8
+            and abs(x-(face.x+face.width/2)) < face.width*6):
+        return False
+    return .3 <= finger_curl(hand) <= .97
+
+
 def charge_pose(hands: Sequence[Hand], face: Face) -> bool:
-    """Both hands cupped together beside the body, under the chin: the charge of the energy wave."""
+    """Both hands cupped together anywhere below the mouth, beside or in front of the chest: the energy wave charge."""
     ball = wave_ball(hands, face)
-    if ball is None:
+    if ball is None or not all(charge_hand(hand, face) for hand in hands):
         return False
-    # Beside the torso (either side), not in front of the face or the chest: clasped hands stay harmless.
-    side = abs(ball.x-(face.x+face.width/2))/face.width
-    if not (.8 < side < 4.5 and face.y+face.height*.9 < ball.y < face.y+face.height*5):
-        return False
-    # Relaxed, curled fingers: neither flat open palms nor fists.
-    if not all(.35 <= finger_curl(hand) <= .93 for hand in hands):
-        return False
-    # Palms face each other, so the hands point the same way.
+    # Palms roughly face each other, so the hands point roughly the same way.
     d0 = (hands[0][9].x-hands[0][0].x, hands[0][9].y-hands[0][0].y)
     d1 = (hands[1][9].x-hands[1][0].x, hands[1][9].y-hands[1][0].y)
     cosine = (d0[0]*d1[0]+d0[1]*d1[1])/(dist((0, 0), d0)*dist((0, 0), d1))
-    return degrees(acos(max(-1.0, min(1.0, cosine)))) < 80
+    return degrees(acos(max(-1.0, min(1.0, cosine)))) < 120
+
+
+def opening_hand(hand: Hand, base: float = 0.0) -> bool:
+    """A hand that is opening: at least three extended fingers and straighter than the charge was."""
+    if not valid_hand(hand) or sum(extended(hand, b) for b in (5, 9, 13, 17)) < 3:
+        return False
+    return finger_curl(hand) >= min(WAVE_OPEN_CURL, base+WAVE_OPEN_MARGIN)
 
 
 def push_pose(hands: Sequence[Hand], face: Face) -> bool:
-    """Both hands open and together in front of the body: the release of the energy wave."""
+    """Both hands open and together in front of the body (kept as a strict reference pose)."""
     ball = wave_ball(hands, face, 1.15)
     if ball is None:
         return False
@@ -174,6 +196,7 @@ class GestureRecognizer:
         self.charge_seen = 0.0
         self.level = 0.0
         self.last_ball: Ball | None = None
+        self.curl_base = 0.0
         self.trail: deque[tuple[float, float, float]] = deque()
 
     def _neutral(self, now: float) -> None:
@@ -189,49 +212,84 @@ class GestureRecognizer:
         self.prepared = None
         return Recognition(True, 1.0, 'Gesto reconhecido. Solte a mão antes de repetir.')
 
+    def _end_charge(self) -> None:
+        self.charge_since, self.level = None, 0.0
+        self.trail.clear()
+
+    def _fire(self, ball: Ball | None, now: float) -> Recognition:
+        level = self.level
+        self._pulse()
+        self._end_charge()
+        return Recognition(True, 1.0, 'Onda disparada! Baixe as mãos antes de repetir.', False, level, ball)
+
+    def _growing(self) -> bool:
+        """Were the hands getting larger (closer to the camera) over the last frames?"""
+        if len(self.trail) < 3 or self.trail[-1][0]-self.trail[0][0] < .12:
+            return False
+        sizes = [size for _, size, _ in self.trail]
+        early = sorted(sizes[:max(1, len(sizes)//2)])
+        return sizes[-1]/early[len(early)//2] >= WAVE_GROWTH
+
     def _wave(self, hands: Sequence[Hand], face: Face, now: float, instruction: str) -> Recognition:
-        """Charge with cupped hands at the side, then push them open: the pulse is the shot."""
-        charged, pushed = charge_pose(hands, face), push_pose(hands, face)
-        ball = wave_ball(hands, face, 1.15)
+        """Charge with cupped hands below the mouth, then open them (or push): the pulse is the shot."""
+        valid = [hand for hand in hands if valid_hand(hand)]
+        charged = charge_pose(hands, face)
         if not self.armed:
             # At start-up and after a shot the pose has to be released before it counts again.
-            if charged or pushed:
+            if charged or any(charge_hand(hand, face) or opening_hand(hand) for hand in valid):
                 self.neutral_since = None
             else:
                 self._neutral(now)
             return Recognition(False, 0, 'Baixe as mãos antes de carregar de novo.' if hands else instruction)
         centre = face.x+face.width/2
-        if self.charge_since is not None and pushed and self.level >= WAVE_MIN_CHARGE and now-self.charge_seen <= WAVE_WINDOW and ball is not None:
-            sizes = sorted(size for _, size, _ in self.trail)
-            offsets = sorted(offset for _, _, offset in self.trail)
-            if sizes and (ball.size/sizes[len(sizes)//2] >= WAVE_GROWTH
-                          or offsets[len(offsets)//2]-abs(ball.x-centre) >= WAVE_SHIFT*face.width):
-                level = self.level
-                self._pulse()
-                self.charge_since, self.level = None, 0.0
-                self.trail.clear()
-                return Recognition(True, 1.0, 'Onda disparada! Baixe as mãos antes de repetir.', False, level, ball)
-        if charged and ball is not None:
+        ball = wave_ball(hands, face, 1.3)
+        if ball is None and len(valid) == 1:
+            ball = hand_ball(valid[0])
+        if self.charge_since is not None:
+            gap = now-self.charge_seen
+            if gap > WAVE_WINDOW:
+                self._end_charge()
+            else:
+                if valid:
+                    size = sum(distance(hand, 0, 9) for hand in valid)/len(valid)
+                    if not self.trail or now > self.trail[-1][0]:
+                        self.trail.append((now, size, abs((ball or self.last_ball or Ball(centre, 0, 0)).x-centre)))
+                    while self.trail and now-self.trail[0][0] > .7:
+                        self.trail.popleft()
+                opened = [hand for hand in valid if opening_hand(hand, self.curl_base)]
+                if opened and self.level >= WAVE_MIN_CHARGE:
+                    return self._fire(ball or self.last_ball, now)
+                if not valid and self.level >= WAVE_FULL_CHARGE and self._growing():
+                    return self._fire(self.last_ball, now)
+        keep = [hand for hand in valid if charge_hand(hand, face)]
+        if charged or (self.charge_since is not None and keep):
             if self.charge_since is None:
                 self.charge_since = now
                 self.trail.clear()
+                self.curl_base = 0.0
+            curl = sum(finger_curl(hand) for hand in keep)/len(keep)
+            self.curl_base = curl if self.curl_base == 0.0 else self.curl_base*.8+curl*.2
+            ball = ball or self.last_ball
             self.charge_seen = now
             self.last_ball = ball
             self.level = min(1.0, (now-self.charge_since)/WAVE_CHARGE_SECONDS)
-            self.trail.append((now, ball.size, abs(ball.x-centre)))
+            if not self.trail or now > self.trail[-1][0]:
+                size = sum(distance(hand, 0, 9) for hand in keep)/len(keep)
+                self.trail.append((now, size, abs(ball.x-centre)))
             while self.trail and now-self.trail[0][0] > .7:
                 self.trail.popleft()
-            return Recognition(False, self.level, 'Carga completa! Empurre as mãos abertas para a frente.' if self.level >= 1
+            return Recognition(False, self.level, 'Carga completa! Abra as mãos e empurre.' if self.level >= 1
                                else 'Carregando… mantenha as mãos juntas.', True, self.level, ball)
         if self.charge_since is not None:
+            # Between the pose and the release: the ball lingers while tracking flickers.
             gap = now-self.charge_seen
-            if gap <= WAVE_WINDOW:
-                # Between the pose and the push: the ball lingers while the hands open.
-                return Recognition(False, self.level, 'Agora empurre as mãos para a frente.',
-                                   gap <= WAVE_GRACE or pushed, self.level, ball or self.last_ball)
-            self.charge_since, self.level = None, 0.0
-            self.trail.clear()
-        return Recognition(False, 0, instruction)
+            return Recognition(False, self.level, 'Agora abra as mãos e empurre.',
+                               gap <= WAVE_GRACE, self.level, self.last_ball)
+        if len(valid) == 1 and charge_hand(valid[0], face):
+            return Recognition(False, 0, 'Só vejo uma mão. Junte as duas mãos em concha.')
+        if charged is False and len(valid) == 2 and all(charge_hand(hand, face) for hand in valid):
+            return Recognition(False, 0, 'Aproxime as duas mãos, palma com palma, em concha.')
+        return Recognition(False, 0, 'Junte as duas mãos em concha na frente do peito.' if valid else instruction)
 
     def update(self, hands: Sequence[Hand], face: Face | None, now: float, effect: str) -> Recognition:
         guide = guide_for(effect)
@@ -241,7 +299,7 @@ class GestureRecognizer:
         if not isfinite(now):
             self.reset()
             return Recognition(False, 0, 'Aguardando uma observação válida.')
-        if self.last is not None and (now <= self.last or now-self.last > .3):
+        if self.last is not None and (now <= self.last or now-self.last > WAVE_MAX_GAP):
             self.reset()
         self.last = now
         if face is None or not all(isfinite(v) for v in (face.x, face.y, face.width, face.height)) or min(face.width, face.height) < 20:

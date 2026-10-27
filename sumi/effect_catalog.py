@@ -19,7 +19,7 @@ DESCRIPTIONS: dict[str, str] = {
     'anime': 'Linhas de velocidade e um corte rápido, com acabamento de animação.',
     'puff': 'Uma explosão de fumaça e um tronco fica no seu lugar, antes de cair para fora do quadro.',
     'clones': 'Clones surgem de nuvens de fumaça atrás de você e ficam. O selo de uma mão chama mais clones; cruzar os dedos de novo dispensa todos.',
-    'kamehameha': 'Junte as mãos ao lado do corpo para carregar e empurre para a frente para disparar a onda.',
+    'kamehameha': 'Junte as duas mãos em concha na frente do peito para carregar; abra as mãos e empurre para a frente para disparar a onda.',
     'digital': 'Seu recorte se desfaz em blocos de videogame.',
     'dust': 'Seu recorte se dissolve em pequenas partículas levadas para o lado.',
     'cartoon': 'Uma arrancada para o lado, com deformação e rastro.',

@@ -23,16 +23,19 @@ def data_file(name: str) -> Path:
     return folder / name
 
 
+EXTENSION_FILES = ('manifest.json', 'package.json', 'background.js', 'heartbeat.js', 'mixer.js',
+                   'protocol.js', 'popup.js', 'popup.html', 'popup.css')
+
+
 def extension_folder() -> Path:
     """Export only on request; Chrome must never depend on onefile's temp folder."""
     source = resource_root() / 'meet_extension'
     if not getattr(sys, 'frozen', False):
         return source
-    from . import __version__
-    destination = data_root() / 'extensions' / __version__ / 'meet_extension'
+    # One stable folder: Chrome keeps the unpacked extension across app updates.
+    destination = data_root() / 'extensao-meet'
     destination.mkdir(parents=True, exist_ok=True)
-    for name in ('manifest.json', 'package.json', 'background.js', 'heartbeat.js',
-                 'protocol.js', 'popup.js', 'popup.html', 'popup.css'):
+    for name in EXTENSION_FILES:
         target = destination / name
         content = (source / name).read_bytes()
         if target.is_file() and target.read_bytes() == content:

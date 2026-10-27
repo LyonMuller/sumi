@@ -13,9 +13,10 @@ teste com câmera, driver e navegador reais.
   em trânsito e prazo de resposta. Um travamento encerra o filho e mantém prévia.
 - O evento que permite sair do Meet exige confirmação do quadro pelo componente,
   após o envio real à câmera virtual; falha/timeout não confirma o desaparecimento.
-- Extensão não recebe frames e não solicita captura de câmera ou microfone.
-- Ponte HTTP somente em loopback; Host exato, Origin restrito e segredo local
-  são exigidos. Não adicionar CORS permissivo ou escuta em 0.0.0.0.
+- Extensão não recebe frames e não pede câmera ou microfone. O script no Meet só
+  mistura os sons dos efeitos ao microfone que o Meet já abriu; não lê o áudio.
+- Ponte HTTP somente em loopback; exige Host exato e Origin igual ao ID fixo da
+  extensão (chave pública no manifest). Páginas web não forjam Origin. Não adicionar CORS permissivo ou escuta em 0.0.0.0.
 - A saída automática começa desligada, exige vínculo e saída virtual ativa,
   e só começa depois de enviar o frame final do desaparecimento.
 - Um comando é de uso único, tem prazo curto e identifica sala e aba. A extensão

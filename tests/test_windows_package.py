@@ -55,7 +55,7 @@ class WindowsPackageTests(unittest.TestCase):
                 self.assertTrue(source.resolve().is_relative_to(base.resolve()))
                 rmtree(source)
                 self.assertTrue((destination / 'manifest.json').is_file())
-                self.assertEqual(len(list(destination.iterdir())), 8)
+                self.assertEqual(len(list(destination.iterdir())), 9)
                 self.assertFalse(list(destination.glob('*.tmp')))
 
     def test_model_bytes_support_unicode_paths_and_keep_pinned_hash_validation(self):
@@ -88,22 +88,12 @@ class WindowsPackageTests(unittest.TestCase):
                 self.assertFalse(resource_root().exists())
                 self.assertFalse((base / 'profile' / 'Sumi' / 'user_settings.tmp').exists())
 
-    def test_frozen_pairing_is_unique_per_profile_and_persistent(self):
-        from sumi.meet import MeetBridge
-        with tempfile.TemporaryDirectory() as folder:
-            with patch.object(sys, 'frozen', True, create=True), \
-                 patch.object(sys, 'platform', 'win32'), \
-                 patch.dict('os.environ', {'LOCALAPPDATA': folder}):
-                first = MeetBridge(port=0)
-                try:
-                    token = first.token
-                finally:
-                    first.close()
-                second = MeetBridge(port=0)
-                try:
-                    self.assertEqual(token, second.token)
-                finally:
-                    second.close()
+    def test_extension_id_matches_manifest_key(self):
+        import base64, hashlib, json
+        from sumi.meet import EXTENSION_ID
+        manifest = json.loads((Path(__file__).resolve().parents[1] / 'meet_extension' / 'manifest.json').read_text())
+        digest = hashlib.sha256(base64.b64decode(manifest['key'])).hexdigest()[:32]
+        self.assertEqual(EXTENSION_ID, ''.join(chr(ord('a') + int(c, 16)) for c in digest))
 
     def test_source_keeps_existing_development_settings_location(self):
         with patch.object(sys, 'frozen', False, create=True):

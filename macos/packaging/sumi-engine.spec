@@ -26,6 +26,8 @@ for path in sorted((root / 'assets' / 'gestures').glob('*.png')):
     datas.append((str(path), 'assets/gestures'))
 for path in sorted((root / 'assets' / 'effects').glob('*.png')):
     datas.append((str(path), 'assets/effects'))
+for path in sorted((root / 'assets' / 'sounds').glob('*.wav')):
+    datas.append((str(path), 'assets/sounds'))
 # Brand art for the engine: the app icon only (README cover and the icon source art stay out).
 for name in ('app-icon.png', 'app-icon-macos.png'):
     datas.append((str(root / 'assets' / 'brand' / name), 'assets/brand'))

@@ -59,6 +59,7 @@ def _():
     tronco = cv2.imread(str(root / 'assets' / 'effects' / 'tronco.png'), cv2.IMREAD_UNCHANGED)
     assert tronco is not None and tronco.shape[2] == 4
     assert (root / 'assets' / 'brand' / 'app-icon-macos.png').is_file()
+    assert (root / 'assets' / 'sounds' / 'restore.wav').is_file()
     return f'{len(names)} gesture images, effect and brand art'
 
 

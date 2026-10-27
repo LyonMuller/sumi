@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuPFukvlnuqB3ggPH18R0hdIpQbKqvpiBAs7K7Ibn2ckxmqBntTJzhF/YStm3q6n0PU8KobdGLeSBMgekoBSOuoZ/f6ePDWXm8fkNjBdt9Df98SyjF87htI84DGHjgI0dfE0n7pyqZVZ+M+WpUgH6IBq4owYUO8OYcaAoGO2mL0trCid4Ar1zx03IoQeF5tCE5Zh4TLVZvWjldrp7Fwo2t5pQU3lXZB1+pCArfNDbUW2w6RXxbmSBJabipcY3Eh7TGq4RP7NGz+gIzCV6A07XR//E7Tl1bR8FiAht9gAf2VfD2q6fc4XFY53FeoTwFHueAk/W2nxBSLc00WLXXUb02QIDAQAB",
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:49321"
   },
   "name": "Sumi · Meet",
   "version": "0.5.0",
-  "description": "Fecha apenas a aba do Meet vinculada quando o Sumi local solicita.",
+  "description": "Vincula sozinha a reunião aberta ao Sumi: toca os sons dos efeitos na chamada e fecha a aba quando você pede.",
   "permissions": [
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://meet.google.com/*",
@@ -19,7 +21,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Vincular Sumi ao Meet"
+    "default_title": "Sumi · Meet"
   },
   "content_scripts": [
     {
@@ -27,9 +29,19 @@
         "https://meet.google.com/*"
       ],
       "js": [
+        "mixer.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
         "heartbeat.js"
       ],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ]
 }

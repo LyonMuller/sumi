@@ -48,6 +48,8 @@ class Engine:
         self.silhouette: Silhouette | None = None
         self.need_silhouette = Event()
         self.disappearances: Queue[tuple[float,bool]] = Queue()
+        # Sounds for the app to play: (action, name), action is play, loop, stop or stop_all.
+        self.sounds: Queue[tuple[str,str]] = Queue()
         self.virtual_active = False
         self.background_status = ''
         self.preview: Frame | None = None
@@ -247,7 +249,10 @@ class Engine:
                     except Empty: break
                     gate.reset();seal_gate.reset()
                     previous_observation=now
-                    if command in ('restore','calibrate'): wave_fx.reset()
+                    if command in ('restore','calibrate'):
+                        wave_fx.reset()
+                        self.sounds.put(('stop_all',''))
+                        if command=='restore' and (scene.hidden or clones_on): self.sounds.put(('play','restore'))
                     if command=='restore':
                         effect=None
                         requested=None
@@ -333,13 +338,16 @@ class Engine:
                     wave_fx.update(now,None,0.0,False,None)
                 if wave_fx.charging and not wave_was_charging:
                     self._set_message('Carregando a onda…')
+                    self.sounds.put(('loop','kamehameha-charge'))
                 elif wave_was_charging and not wave_fx.charging and requested is None:
                     self._set_message('A onda se desfez. Junte as mãos de novo para carregar.')
+                    self.sounds.put(('stop','kamehameha-charge'))
                 wave_was_charging=wave_fx.charging
                 if summon_requested and clones_on and clones_effect is not None and effect is None:
                     fresh_now=silhouette if silhouette is not None and now-silhouette.captured_at<=0.5 else None
                     if clones_effect.summon(fresh_now,now):
                         arrival_message_at=now+clones_effect.arrival
+                        self.sounds.put(('play','clones-wave'))
                         self._set_message('Mais clones chegando…')
                     else:
                         self._set_message('Máximo de clones.')
@@ -359,6 +367,7 @@ class Engine:
                         try:
                             effect=type(clones_effect)(clones_effect.last_subject,False,now,carry=clones_effect)
                             clones_on=False
+                            self.sounds.put(('play','clones'))
                             self._set_message('Dispensando os clones…')
                         except ValueError as error:
                             clones_on=False
@@ -374,6 +383,7 @@ class Engine:
                                 effect=EFFECTS[self.effect_mode](silhouette,True,now)
                                 clones_effect=effect
                                 clones_on=True
+                                self.sounds.put(('play','clones'))
                                 self._set_message('Os clones estão chegando…')
                             except ValueError as error:
                                 self._set_message(str(error))
@@ -392,11 +402,13 @@ class Engine:
                                 effect=EFFECTS[self.effect_mode](silhouette if fresh and silhouette is not None else None,False,now,
                                                                   ball=ball,charge=wave_charge if fresh_hands else max(wave_fx.level,.7),
                                                                   shape=frame.shape[:2])
+                                self.sounds.put(('play','kamehameha-fire'))
                                 self._set_message('Onda disparada!')
                             except ValueError as error:
                                 self._set_message(str(error))
                         wave_fx.reset()
                         wave_was_charging=False
+                        self.sounds.put(('stop','kamehameha-charge'))
                         requested=None
                         gate.reset();seal_gate.reset()
                     else:
@@ -406,6 +418,7 @@ class Engine:
                                 effect_class=EFFECTS[self.effect_mode]
                                 effect=effect_class(silhouette,target,now)
                                 scene.toggle()
+                                self.sounds.put(('play',self.effect_mode))
                                 self._set_message('Efeito em andamento…')
                             except ValueError as error:
                                 self._set_message(str(error))

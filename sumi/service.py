@@ -191,11 +191,10 @@ class Service:
             controller.command(str(name))
         elif command == 'prepare_meet':
             controller.prepare_meet()
-        elif command == 'pairing_code':
-            code = controller.pairing_code()
-            if code is None:
-                raise ValueError(controller.bridge_error or 'Integração Meet indisponível.')
-            return code
+        elif command == 'set_sounds':
+            controller.set_sounds(bool(message.get('enabled')))
+        elif command == 'set_call_sounds':
+            controller.set_call_sounds(bool(message.get('enabled')))
         elif command == 'extension_path':
             folder = controller.extension_path()
             if folder is None:

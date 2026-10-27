@@ -58,6 +58,19 @@ class PoseTests(unittest.TestCase):
                 with self.subTest(x=x, degrees=degrees):
                     self.assertTrue(charge_pose(cupped(x, degrees=degrees), FACE))
 
+    def test_charge_works_in_front_of_the_chest_and_up_to_the_mouth(self):
+        for x in (150, 190, 110):
+            for y in (330, 420, 700):
+                with self.subTest(x=x, y=y):
+                    self.assertTrue(charge_pose(cupped(x, y), FACE))
+        self.assertTrue(charge_pose(cupped(x=150, y=300, degrees=60), FACE))
+
+    def test_charge_tolerates_loose_curl_and_misaligned_hands(self):
+        self.assertTrue(charge_pose(cupped(bend=22), FACE))
+        self.assertTrue(charge_pose(cupped(bend=70), FACE))
+        self.assertTrue(charge_pose([hand21((318, 420), 90), hand21((342, 420), 40)], FACE))   # 50 degrees apart
+        self.assertTrue(charge_pose(cupped(gap=90), FACE))
+
     def test_charge_is_scale_invariant(self):
         big = Face(200, 200, 200, 320)
         self.assertTrue(charge_pose(flat(cupped(), 2), big))
@@ -74,9 +87,9 @@ class PoseTests(unittest.TestCase):
             'flat open palms': cupped(bend=0),
             'fists': cupped(bend=95),
             'hands apart': cupped(gap=260),
-            'in front of the face': cupped(x=150),
-            'in front of the chest': cupped(x=190),
+            'at the mouth': cupped(x=150, y=240),
             'at face height': cupped(y=150),
+            'above the head': cupped(y=-200),
             'far to the side': cupped(x=900),
             'hands pointing away from each other': [hand21((318, 420), 90), hand21((342, 420), 270)],
             'tiny hands': cupped(palm=8),
@@ -158,9 +171,9 @@ class SequenceTests(unittest.TestCase):
         self.assertEqual(charges, sorted(charges))
         self.assertIsNotNone(results[-1].ball)
 
-    def test_push_after_the_charge_fires_exactly_once_and_reports_the_muzzle(self):
+    def test_opening_the_hands_after_the_charge_fires_exactly_once_and_reports_the_muzzle(self):
         recognizer, _, t = self.charged()
-        results, _ = self.run_frames(recognizer, pushed(x=330, palm=100), t, .5)       # bigger: closer to the camera
+        results, _ = self.run_frames(recognizer, pushed(x=330, palm=100), t, .5)
         fired = [r for r in results if r.matched]
         self.assertEqual(len(fired), 1)
         self.assertIs(results[0], fired[0])
@@ -168,38 +181,80 @@ class SequenceTests(unittest.TestCase):
         self.assertAlmostEqual(fired[0].ball.x, wave_ball(pushed(x=330, palm=100), FACE).x, places=3)
         self.assertFalse(any(r.charging for r in results[1:]))
 
-    def test_push_toward_the_centre_fires_even_without_growing(self):
-        recognizer, _, t = self.charged()
+    def test_opening_in_place_without_moving_fires_in_front_of_the_chest(self):
+        recognizer, _, t = self.charged(x=150)
         results, _ = self.run_frames(recognizer, pushed(x=150), t, .3)
         self.assertEqual(sum(r.matched for r in results), 1)
 
-    def test_push_straight_ahead_grows_the_hands_and_fires(self):
+    def test_opening_a_single_hand_fires(self):
         recognizer, _, t = self.charged()
-        results, _ = self.run_frames(recognizer, pushed(x=330, palm=84), t, .3)         # +20 %, no move
+        results, _ = self.run_frames(recognizer, [pushed(x=330)[0]], t, .3)
         self.assertEqual(sum(r.matched for r in results), 1)
 
-    def test_opening_the_hands_in_place_is_not_a_push(self):
+    def test_the_hands_may_open_apart_from_each_other(self):
         recognizer, _, t = self.charged()
-        results, t = self.run_frames(recognizer, pushed(x=330, palm=72), t, .7)
+        spread = [hand21((250, 420), 90, 70, 0.0), hand21((410, 420), 90, 70, 0.0)]
+        results, _ = self.run_frames(recognizer, spread, t, .3)
+        self.assertEqual(sum(r.matched for r in results), 1)
+
+    def test_opening_up_to_a_second_after_the_last_charged_frame_still_fires(self):
+        recognizer, _, t = self.charged()
+        _, t = self.run_frames(recognizer, [], t, .7)
+        results, _ = self.run_frames(recognizer, pushed(x=150), t, .2)
+        self.assertEqual(sum(r.matched for r in results), 1)
+
+    def test_losing_the_hands_after_a_full_charge_while_they_grow_fires(self):
+        recognizer, _, t = self.charged()
+        grow = []
+        for palm in (74, 80, 88, 98):                                  # moving to the camera, still cupped
+            grow.append(recognizer.update(cupped(palm=palm), FACE, t, MODE))
+            t += self.DT
+        self.assertFalse(any(r.matched for r in grow))
+        lost, _ = self.run_frames(recognizer, [], t, .3)
+        self.assertEqual(sum(r.matched for r in lost), 1)
+        self.assertTrue(lost[0].matched)
+        self.assertGreater(lost[0].charge, .99)
+        self.assertIsNotNone(lost[0].ball)
+
+    def test_losing_the_hands_without_growth_or_before_a_full_charge_is_quiet(self):
+        recognizer, _, t = self.charged()
+        lost, _ = self.run_frames(recognizer, [], t, 1.2)
+        self.assertFalse(any(r.matched for r in lost))
+        recognizer, _, t = self.charged(seconds=.6)
+        for palm in (74, 80, 88, 98):
+            recognizer.update(cupped(palm=palm), FACE, t, MODE)
+            t += self.DT
+        lost, _ = self.run_frames(recognizer, [], t, 1.2)
+        self.assertFalse(any(r.matched for r in lost))
+
+    def test_lowering_curled_hands_out_of_the_frame_cancels_quietly(self):
+        recognizer, _, t = self.charged()
+        results, t = self.run_frames(recognizer, [], t, 1.5)
         self.assertFalse(any(r.matched for r in results))
-        self.assertFalse(results[-1].charging)                         # the ball is gone, the charge too
-        later, _ = self.run_frames(recognizer, pushed(x=150), t, .3)
-        self.assertFalse(any(r.matched for r in later))
+        self.assertFalse(results[-1].charging)
+        late, _ = self.run_frames(recognizer, pushed(x=150), t, .3)
+        self.assertFalse(any(r.matched for r in late))
+
+    def test_curled_hands_staying_below_the_mouth_never_fire_by_themselves(self):
+        recognizer, _, t = self.charged()
+        results, _ = self.run_frames(recognizer, cupped(y=560), t, 1.5)
+        self.assertFalse(any(r.matched for r in results))
+        self.assertTrue(all(r.charging for r in results))
 
     def test_dropping_the_hands_without_a_push_fizzles_and_never_fires(self):
         recognizer, _, t = self.charged()
-        results, t = self.run_frames(recognizer, [], t, 1.0)
+        results, t = self.run_frames(recognizer, [], t, 1.5)
         self.assertFalse(any(r.matched for r in results))
         self.assertTrue(results[0].charging)                           # a flicker keeps the ball for a moment ...
-        self.assertTrue(results[round(.1/self.DT)].charging)
-        self.assertFalse(results[round(.4/self.DT)].charging)           # ... then it fizzles
+        self.assertTrue(results[round(.3/self.DT)].charging)
+        self.assertFalse(results[round(.7/self.DT)].charging)           # ... then it fizzles
         self.assertEqual(results[-1].charge, 0.0)
         late, _ = self.run_frames(recognizer, pushed(x=150), t, .3)
         self.assertFalse(any(r.matched for r in late))
 
-    def test_a_push_that_comes_too_late_does_not_fire(self):
+    def test_an_opening_that_comes_too_late_does_not_fire(self):
         recognizer, _, t = self.charged()
-        _, t = self.run_frames(recognizer, [], t, .8)
+        _, t = self.run_frames(recognizer, [], t, 1.2)
         results, _ = self.run_frames(recognizer, pushed(x=150), t, .4)
         self.assertFalse(any(r.matched for r in results))
 
@@ -210,11 +265,47 @@ class SequenceTests(unittest.TestCase):
 
     def test_a_short_flicker_of_the_pose_keeps_the_charge(self):
         recognizer, _, t = self.charged(seconds=.6)
-        flicker, t = self.run_frames(recognizer, [cupped()[0]], t, .2)
+        flicker, t = self.run_frames(recognizer, [], t, .3)
         self.assertTrue(all(r.charging for r in flicker))
         results, _ = self.run_frames(recognizer, cupped(), t, .5)
         self.assertEqual(results[-1].charge, 1.0)                      # charging resumed from the first frame
         self.assertGreater(results[0].charge, .5)
+
+    def test_charge_survives_losing_one_hand_while_the_other_stays_below_the_mouth(self):
+        recognizer, _, t = self.charged(seconds=.6)
+        one, t = self.run_frames(recognizer, [cupped()[0]], t, 1.0)
+        self.assertTrue(all(r.charging and not r.matched for r in one))
+        self.assertEqual(one[-1].charge, 1.0)                          # kept growing on one hand
+        self.assertIsNotNone(one[-1].ball)
+        flicker = [cupped(), [cupped()[1]], cupped(), [cupped()[0]], cupped()]
+        for hands in flicker:
+            r = recognizer.update(hands, FACE, t, MODE)
+            t += self.DT
+            self.assertTrue(r.charging)
+        fired, _ = self.run_frames(recognizer, pushed(x=330), t, .3)
+        self.assertEqual(sum(r.matched for r in fired), 1)
+
+    def test_one_hand_alone_cannot_start_a_charge_and_the_hint_says_so(self):
+        recognizer, t = self.armed()
+        results, _ = self.run_frames(recognizer, [cupped()[0]], t, 1.0)
+        self.assertFalse(any(r.charging for r in results))
+        self.assertIn('uma mão', results[-1].hint)
+
+    def test_hints_guide_the_gesture(self):
+        recognizer, t = self.armed()
+        self.assertIn('em concha', recognizer.update(cupped(gap=300), FACE, t, MODE).hint)
+        recognizer, t = self.armed()
+        results, t = self.run_frames(recognizer, cupped(), t, .3)
+        self.assertIn('Carregando', results[-1].hint)
+        results, _ = self.run_frames(recognizer, cupped(), t, 1.2)
+        self.assertIn('Carga completa', results[-1].hint)
+        self.assertIn('Abra as mãos', results[-1].hint)
+
+    def test_a_slow_frame_does_not_kill_the_charge(self):
+        recognizer, _, t = self.charged(seconds=.6)
+        r = recognizer.update(cupped(), FACE, t+.45, MODE)
+        self.assertTrue(r.charging)
+        self.assertGreater(r.charge, .5)
 
     def test_a_cupped_pair_that_wanders_slowly_is_not_a_shot(self):
         recognizer, results, t = self.charged(seconds=.5)
@@ -224,9 +315,9 @@ class SequenceTests(unittest.TestCase):
             t += self.DT
         self.assertFalse(any(r.matched for r in drift))
 
-    def test_hands_clasped_in_front_of_the_chest_do_nothing(self):
+    def test_hands_up_at_face_height_do_nothing(self):
         recognizer, t = self.armed()
-        results, t = self.run_frames(recognizer, cupped(x=150), t, 2.0)
+        results, t = self.run_frames(recognizer, cupped(y=150), t, 2.0)
         self.assertFalse(any(r.matched or r.charging for r in results))
 
     def test_after_a_shot_the_hands_must_be_lowered_before_charging_again(self):

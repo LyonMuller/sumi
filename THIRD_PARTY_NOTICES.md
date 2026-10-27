@@ -77,3 +77,11 @@ VanishCam (https://github.com/Nicovic17/vanish_webcam) foi referência técnica 
 Não distribuímos seu código ou recursos. Os efeitos são procedurais próprios; não
 incluímos áudio ou mídia oficial de personagens. As ilustrações e a identidade
 visual foram fornecidas pelo mantenedor para uso no aplicativo e na documentação.
+
+## Efeitos sonoros
+
+Os sons em `assets/sounds/` vêm de gravações e efeitos publicados em domínio público
+(Creative Commons 0, CC0 1.0), cortados e normalizados para o aplicativo. Título, autor e
+endereço de cada fonte estão em `assets/sounds/CREDITS.md`. Nada foi tirado de anime, série,
+jogo ou filme. Para trocar qualquer som, coloque um arquivo com o mesmo nome (por exemplo
+`goku.wav`) na pasta `sons/` dos dados do usuário.

@@ -20,12 +20,16 @@ FOLDERS = {
     'tests': {'.py', '.mjs'}, 'meet_extension': {'.js', '.json', '.html', '.css'},
     'tools': {'.py'}, 'packaging': {'.spec', '.iss', '.txt', '.md'},
 }
+SOUNDS = ('goku', 'anime', 'puff', 'clones', 'clones-wave', 'digital', 'dust', 'cartoon', 'portal',
+          'kamehameha-charge', 'kamehameha-fire', 'restore')
 ASSETS = (
     'assets/README.md', 'assets/gestures/README.md',
     'assets/brand/readme-cover.png', 'assets/brand/app-icon.png', 'assets/brand/app-icon.ico',
     *(f'assets/gestures/{name}.png' for name in
       ('teleporte', 'selo-uma-mao', 'poeira', 'digital', 'palma', 'portal', 'manual', 'clones', 'onda')),
     'assets/effects/README.md', 'assets/effects/tronco.png',
+    'assets/sounds/CREDITS.md',
+    *(f'assets/sounds/{name}.wav' for name in SOUNDS),
 )
 PRIVATE_NAMES = {'.meet_pairing_key', 'user_settings.json', 'startup-error.log'}
 

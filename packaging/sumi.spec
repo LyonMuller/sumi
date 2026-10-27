@@ -15,6 +15,8 @@ datas = [
 for name in ('teleporte.png', 'selo-uma-mao.png', 'poeira.png', 'digital.png', 'palma.png', 'portal.png', 'manual.png', 'clones.png', 'onda.png'):
     datas.append((str(root / 'assets' / 'gestures' / name), 'assets/gestures'))
 datas.append((str(root / 'assets' / 'effects' / 'tronco.png'), 'assets/effects'))
+for path in sorted((root / 'assets' / 'sounds').glob('*.wav')):
+    datas.append((str(path), 'assets/sounds'))
 for name in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'PRIVACY.md', 'GUIA_RAPIDO.html'):
     datas.append((str(root / name), '.'))
 for name in ('hand_landmarker.task', 'face_detector.tflite', 'selfie_segmenter_landscape.tflite'):
