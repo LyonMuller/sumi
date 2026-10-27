@@ -40,7 +40,7 @@ O log do motor fica em `~/Library/Logs/Sumi/engine.log`.
 ## Gerar o DMG
 
 ```bash
-macos/release.sh 0.5.0       # macos/dist/Sumi-0.5.0.dmg e Sumi-0.5.0.dmg.sha256
+macos/release.sh 0.6.0       # macos/dist/Sumi-0.6.0.dmg e Sumi-0.6.0.dmg.sha256
 ```
 
 Requisitos extras: `brew install uv cmake` e as Command Line Tools. Na primeira vez o script:
@@ -80,7 +80,7 @@ Para passar a Developer ID com notarização, defina antes de rodar o `release.s
 export SUMI_SIGN_IDENTITY="Developer ID Application: Seu Nome (TEAMID)"
 xcrun notarytool store-credentials sumi-notary      # uma vez; guarda as credenciais no chaveiro
 export SUMI_NOTARY_PROFILE=sumi-notary
-macos/release.sh 0.5.0
+macos/release.sh 0.6.0
 ```
 
 Com `SUMI_NOTARY_PROFILE` o script notariza e grampeia (`stapler`) o app e depois o DMG. O hardened
@@ -119,5 +119,5 @@ Studio 30 ou superior, ative a câmera virtual uma vez e aprove a extensão em A
 codesign --verify --deep --strict --verbose=2 macos/build/Sumi.app
 spctl -a -vv macos/build/Sumi.app          # "rejected" é esperado sem notarização
 python3 macos/packaging/audit_bundle.py macos/build/Sumi.app --max-minos 15.0
-shasum -a 256 -c macos/dist/Sumi-0.5.0.dmg.sha256   # dentro de macos/dist
+shasum -a 256 -c macos/dist/Sumi-0.6.0.dmg.sha256   # dentro de macos/dist
 ```

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Builds the installable disk image: macos/dist/Sumi-VERSION.dmg and Sumi-VERSION.dmg.sha256.
 #
-#   macos/release.sh 0.5.0
+#   macos/release.sh 0.6.0
 #
 # Steps: environment (python, OpenCV without FFmpeg) -> frozen engine -> Sumi.app (signed inside-out)
 # -> audit -> DMG with Applications link -> sign the DMG -> checksum.
@@ -17,7 +17,7 @@
 # dmg-background@2x.png (1320x800) next to it.
 set -euo pipefail
 
-version="${1:?Uso: macos/release.sh VERSION (ex.: 0.5.0)}"
+version="${1:?Uso: macos/release.sh VERSION (ex.: 0.6.0)}"
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.]+)?$ ]] || { echo "Versão inválida: $version" >&2; exit 2; }
 
 here="$(cd "$(dirname "$0")" && pwd)"

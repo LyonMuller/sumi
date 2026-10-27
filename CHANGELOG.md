@@ -1,7 +1,9 @@
 # Histórico de versões
 
-## Não lançado
+## 0.6.0 — energia, sons e Meet automático
 
+- **Onda de energia.** Junte as mãos em concha na frente do peito para carregar e abra
+  as mãos empurrando para disparar. Você continua na imagem.
 - **Esfera de energia.** Erga as duas mãos acima da cabeça para reunir uma esfera
   gigante; baixe os braços para lançá-la na direção da câmera, com clarão e onda de choque.
 - **Sons dos efeitos.** Cada efeito tem som, também na chamada do Meet (opcional).

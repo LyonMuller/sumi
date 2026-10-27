@@ -31,7 +31,7 @@ done
 app="$here/build/Sumi.app"
 bundle_id="dev.lyon.Sumi"
 version="${SUMI_VERSION:-$(sed -n "s/^__version__ = '\(.*\)'/\1/p" "$root/sumi/__init__.py")}"
-version="${version:-0.5.0}"
+version="${version:-0.6.0}"
 engine="$here/.cache/engine/SumiEngine"  # PyInstaller folder: SumiEngine + _internal/
 
 if [[ "$mode" == "dev" && ! -x "$root/.venv/bin/python" ]]; then

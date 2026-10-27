@@ -2,8 +2,8 @@
 
 Este repositório contém os fontes completos do Sumi: aplicativos para macOS e
 Windows, programa independente de saída de vídeo, extensão opcional, testes e
-ferramentas de empacotamento. Para apenas usar o aplicativo, baixe o `.dmg`, o
-instalador ou o executável na [Release](https://github.com/LyonMuller/sumi/releases/tag/v0.5.0).
+ferramentas de empacotamento. Para apenas usar o aplicativo no Mac, baixe o `.dmg` na
+[Release](https://github.com/LyonMuller/sumi/releases/tag/v0.6.0).
 
 ## Preparar o ambiente
 

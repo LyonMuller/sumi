@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Writes the third-party notices of the macOS bundle (Contents/Resources/Licenses).
 
-    make_notices.py --engine <SumiEngine folder> --version 0.5.0 --output <folder>
+    make_notices.py --engine <SumiEngine folder> --version 0.6.0 --output <folder>
 
 Runs with the packaging venv (macos/.cache/venv), the environment the engine was frozen from. The list
 of bundled components is read from the frozen engine itself (its embedded module archive and its folder

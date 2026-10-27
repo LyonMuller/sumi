@@ -3,17 +3,19 @@
 ![Sumi — suma da sua chamada de vídeo com um gesto](assets/brand/readme-cover.png)
 
 Suma da webcam com um gesto e reapareça quando quiser. Teleporte, kawarimi, clones
-de sombra, fumaça, poeira, pixels, saída de desenho e portal para suas chamadas de vídeo.
+de sombra, onda e esfera de energia, poeira, pixels, saída de desenho e portal, com
+sons, para suas chamadas de vídeo.
 
 O nome vem do português “(eu) sumi” e da tinta japonesa *sumi*.
 
-**macOS (Apple Silicon) e Windows x64 · Processamento local · Sem áudio · Sem APIs pagas**
+**macOS (Apple Silicon) e Windows x64 · Processamento local · Sem gravação de áudio · Sem APIs pagas**
 
-[Baixar a versão 0.5.0](https://github.com/LyonMuller/sumi/releases/tag/v0.5.0) ·
+[Baixar a versão 0.6.0](https://github.com/LyonMuller/sumi/releases/tag/v0.6.0) ·
 [Como usar](COMO_USAR.md) · [Privacidade](PRIVACY.md)
 
-> **Versão 0.5.0 · primeira versão do Sumi.** Disponível para avaliação no macOS e no
-> Windows. Teste a prévia antes de usar em uma reunião importante.
+> **Versão 0.6.0 · onda e esfera de energia, sons e Meet automático.** O app do Mac está
+> pronto para baixar; no Windows, rode pelos fontes por enquanto. Teste a prévia antes de
+> usar em uma reunião importante.
 
 ## Baixar e abrir
 
@@ -36,27 +38,9 @@ projeto. O app inclui o necessário. A tela de boas-vindas do Sumi guia o resto.
 
 ### Windows
 
-Escolha uma opção abaixo. As duas incluem o aplicativo completo:
-
-| Opção | Arquivo | Como funciona |
-|---|---|---|
-| **Executável único** | [**Baixar executável único**](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/Sumi-Portatil-0.5.0.exe) | Baixe e abra. Sem instalador, sem extrair uma pasta manualmente. |
-| **Instalador** | [**Baixar instalador**](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/Sumi-Setup-0.5.0.exe) | Instale para seu usuário e abra pelo atalho do menu Iniciar. Inclui desinstalador. |
-
-As duas opções incluem Python, bibliotecas e modelos. **Você não precisa instalar
-Python nem baixar o projeto.** O executável único prepara os componentes em uma
-pasta temporária ao abrir; por isso pode demorar mais para iniciar.
-
-**Use os links de download acima. Code → Download ZIP baixa os arquivos do repositório, não o aplicativo pronto.**
-
-Os arquivos ainda não têm assinatura digital. Não desative o antivírus ou as
-proteções do Windows. O arquivo [SHA256SUMS.txt](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/SHA256SUMS.txt) acompanha os downloads para
-conferir sua integridade; ele não substitui uma assinatura do editor.
-
-Também estão disponíveis [fontes da saída de vídeo](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/Sumi-Fontes-Saida-0.5.0.zip)
-e [licenças e avisos](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/Sumi-Licencas-0.5.0.zip).
-Esses arquivos documentam o componente independente de saída e suas licenças;
-quem só quer usar não precisa baixar ou compilar os fontes.
+Os executáveis do Windows (instalador e arquivo único) desta versão ainda não foram
+gerados. Por enquanto, rode o Sumi pelos fontes seguindo [DESENVOLVIMENTO.md](DESENVOLVIMENTO.md)
+ou gere o instalador e o executável único com [DISTRIBUIR.md](DISTRIBUIR.md).
 
 ## Preparar uma vez para chamadas
 
@@ -158,7 +142,7 @@ efeitos, gestos, programa independente de saída, extensão opcional, testes e r
 - [Executar pelos fontes e entender a arquitetura](DESENVOLVIMENTO.md)
 - [Gerar o instalador e o executável único](DISTRIBUIR.md)
 - [Baixar todos os fontes atuais em ZIP](https://github.com/LyonMuller/sumi/archive/refs/heads/main.zip)
-- [Baixar o pacote de fontes 0.5.0](https://github.com/LyonMuller/sumi/releases/download/v0.5.0/sumi-0.5.0-source.zip)
+- [Baixar o pacote de fontes 0.6.0](https://github.com/LyonMuller/sumi/releases/download/v0.6.0/sumi-0.6.0-source.zip)
 
 Para estudar: `sumi/` contém o motor e o aplicativo do Windows; `macos/`, o
 aplicativo nativo do Mac; `camera_output/` documenta a saída independente;

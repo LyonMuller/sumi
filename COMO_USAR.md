@@ -12,8 +12,8 @@
 
 ### Windows
 
-- **Executável único:** abra `Sumi-Portatil-0.5.0.exe`. Não precisa instalar Python ou extrair pastas manualmente.
-- **Instalador:** execute `Sumi-Setup-0.5.0.exe`, conclua e abra pelo menu Iniciar.
+- **Executável único:** abra `Sumi-Portatil-0.6.0.exe`. Não precisa instalar Python ou extrair pastas manualmente.
+- **Instalador:** execute `Sumi-Setup-0.6.0.exe`, conclua e abra pelo menu Iniciar.
 
 Feche a versão anterior antes de abrir outra. A versão portátil salva preferências
 no seu usuário; mover ou apagar o .exe não apaga essas preferências.
