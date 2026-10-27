@@ -8,7 +8,7 @@ from sumi.effect_catalog import EFFECTS
 from sumi.sounds import SoundBank, SoundPlayer
 from tools.package_release import ROOT, release_files
 
-EXTRA = ('kamehameha-charge', 'kamehameha-fire', 'restore', 'clones-wave')
+EXTRA = ('kamehameha-charge', 'kamehameha-charge-loop', 'kamehameha-fire', 'restore', 'clones-wave')
 
 
 class FakeProc:

@@ -80,8 +80,10 @@ visual foram fornecidas pelo mantenedor para uso no aplicativo e na documentaç�
 
 ## Efeitos sonoros
 
-Os sons em `assets/sounds/` vêm de gravações e efeitos publicados em domínio público
-(Creative Commons 0, CC0 1.0), cortados e normalizados para o aplicativo. Título, autor e
-endereço de cada fonte estão em `assets/sounds/CREDITS.md`. Nada foi tirado de anime, série,
-jogo ou filme. Para trocar qualquer som, coloque um arquivo com o mesmo nome (por exemplo
-`goku.wav`) na pasta `sons/` dos dados do usuário.
+Os sons de carga e disparo do Kamehameha, do teletransporte, da fumaça e dos clones são
+trechos de efeitos sonoros originais de anime (Dragon Ball e Naruto). **Não são CC0 nem estão
+sob a licença MIT do Sumi**; os direitos pertencem aos respectivos titulares, e eles estão
+incluídos só para uso pessoal e sem fins comerciais. Os demais sons em `assets/sounds/` vêm de
+gravações publicadas em domínio público (Creative Commons 0, CC0 1.0). A origem de cada
+arquivo está em `assets/sounds/CREDITS.md`. Para trocar qualquer som, coloque um arquivo com o
+mesmo nome (por exemplo `goku.wav`) na pasta `sons/` dos dados do usuário.

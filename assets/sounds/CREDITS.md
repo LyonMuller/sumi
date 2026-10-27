@@ -1,10 +1,32 @@
 # Créditos dos efeitos sonoros
 
-Todos os sons de `assets/sounds/` foram feitos a partir de gravações e efeitos de terceiros
-publicados em **domínio público / Creative Commons 0 (CC0 1.0)**
-(<https://creativecommons.org/publicdomain/zero/1.0/>). CC0 não exige atribuição; os
-créditos abaixo são uma cortesia e deixam a origem rastreável. Nenhum som vem de anime, série,
-jogo ou filme.
+Os sons de `assets/sounds/` têm duas origens.
+
+## Trechos de anime (não CC0)
+
+Os arquivos abaixo são trechos de efeitos sonoros originais de anime, baixados de
+soundboards públicos, cortados (sem as falas) e com volume igualado: mono, 16 bits, 22,05 kHz.
+**Não são de domínio público nem estão sob a licença MIT do Sumi.** Os direitos pertencem
+aos respectivos titulares (Dragon Ball © Bird Studio/Shueisha, Toei Animation; Naruto ©
+Masashi Kishimoto/Shueisha, Studio Pierrot). Estão aqui só para uso pessoal e sem fins
+comerciais e serão removidos a pedido de quem detém os direitos.
+
+| Arquivo | Origem | Obra |
+| --- | --- | --- |
+| `kamehameha-charge.wav`, `kamehameha-charge-loop.wav` | carga do Kamehameha (início tocado uma vez, depois o trecho de loop repete), via [Myinstants](https://www.myinstants.com) | Dragon Ball |
+| `kamehameha-fire.wav` | disparo do raio, via [Myinstants](https://www.myinstants.com) | Dragon Ball |
+| `goku.wav` | Teletransporte (Transmissão Instantânea), via [Myinstants](https://www.myinstants.com) | Dragon Ball |
+| `puff.wav` | fumaça do jutsu, via [Voicemod Tuna](https://tuna.voicemod.net) | Naruto |
+| `clones.wav` | som do selo seguido da fumaça das sombras; a fala "Kage Bunshin no Jutsu" foi removida, via [Voicemod Tuna](https://tuna.voicemod.net) | Naruto |
+| `clones-wave.wav` | só a fumaça das sombras, do mesmo arquivo | Naruto |
+
+A Esfera de energia (`genkidama-*`) usa os sons do Kamehameha até ganhar arquivos próprios.
+
+## Sons CC0
+
+Os demais foram feitos a partir de gravações e efeitos publicados em **domínio público /
+Creative Commons 0 (CC0 1.0)** (<https://creativecommons.org/publicdomain/zero/1.0/>). CC0 não
+exige atribuição; os créditos abaixo são uma cortesia e deixam a origem rastreável.
 
 Fonte: [Freesound](https://freesound.org). Foi usada a prévia em MP3 de alta qualidade de cada
 item (a licença de cada página foi conferida como "Creative Commons 0"). Cada WAV final é
@@ -14,13 +36,7 @@ estão misturadas.
 
 | Arquivo | Título | Autor | Fonte | Licença |
 | --- | --- | --- | --- | --- |
-| `goku.wav` | Fast Warp In | GammaGool | <https://freesound.org/people/GammaGool/sounds/735062/> | CC0 |
 | `anime.wav` | Clean fast Swoosh | Danjocross | <https://freesound.org/people/Danjocross/sounds/507466/> | CC0 |
-| `puff.wav` | Poof of Smoke | Planman | <https://freesound.org/people/Planman/sounds/208111/> | CC0 |
-| `clones.wav` | Poof | ryansitz | <https://freesound.org/people/ryansitz/sounds/387834/> | CC0 |
-| `clones-wave.wav` | Poof in cloud (1) + Puff of Smoke (2) + Poof (3), três estouros em sequência | Mateusz_Chenc (1) | <https://freesound.org/people/Mateusz_Chenc/sounds/512217/> | CC0 |
-| | | qubodup (2) | <https://freesound.org/people/qubodup/sounds/714257/> | CC0 |
-| | | ryansitz (3) | <https://freesound.org/people/ryansitz/sounds/387834/> | CC0 |
 | `digital.wav` | Digital Glitch_v1 + Cyberpunk Glitch Hologram Transition Whoosh | tadaizm | <https://freesound.org/people/tadaizm/sounds/458065/> | CC0 |
 | | | brktkrgll | <https://freesound.org/people/brktkrgll/sounds/856168/> | CC0 |
 | `dust.wav` | Short Wind/Air Woosh (A gust of wind) + FX - Swoosh Swirl | NIKOKnecht | <https://freesound.org/people/NIKOKnecht/sounds/569109/> | CC0 |
@@ -28,10 +44,8 @@ estão misturadas.
 | `cartoon.wav` | Cartoon dash / dodge type SFX | modusmogulus | <https://freesound.org/people/modusmogulus/sounds/789383/> | CC0 |
 | `portal.wav` | Scifi, portal, energy, wispy, airy, magic, electric, designed, loop + Black Portal - Dark Dimension Rift | Oldome | <https://freesound.org/people/Oldome/sounds/870393/> | CC0 |
 | | | LilMati | <https://freesound.org/people/LilMati/sounds/657653/> | CC0 |
-| `kamehameha-charge.wav` | Power Charge (trecho estável, com emenda cruzada para repetir sem corte) | Sojan | <https://freesound.org/people/Sojan/sounds/407052/> | CC0 |
-| `kamehameha-fire.wav` | Energy Blast | Kinoton | <https://freesound.org/people/Kinoton/sounds/369516/> | CC0 |
 | `restore.wav` | GLEAM-GLOW-SFX-CHIME | newagesoup | <https://freesound.org/people/newagesoup/sounds/351408/> | CC0 |
 
 Para trocar qualquer som, coloque um arquivo com o mesmo nome na pasta `sons/` dos dados do
 usuário (veja `THIRD_PARTY_NOTICES.md`). `tools/make_sounds.py` é só o antigo gerador de
-reserva; os arquivos distribuídos vêm da tabela acima.
+reserva; os arquivos distribuídos vêm das tabelas acima.

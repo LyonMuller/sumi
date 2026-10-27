@@ -21,7 +21,7 @@ FOLDERS = {
     'tools': {'.py'}, 'packaging': {'.spec', '.iss', '.txt', '.md'},
 }
 SOUNDS = ('goku', 'anime', 'puff', 'clones', 'clones-wave', 'digital', 'dust', 'cartoon', 'portal',
-          'kamehameha-charge', 'kamehameha-fire', 'restore')
+          'kamehameha-charge', 'kamehameha-charge-loop', 'kamehameha-fire', 'restore')
 ASSETS = (
     'assets/README.md', 'assets/gestures/README.md',
     'assets/brand/readme-cover.png', 'assets/brand/app-icon.png', 'assets/brand/app-icon.ico',
