@@ -1,0 +1,9 @@
+mediapipe==1.1.1
+opencv-contrib-python==4.14.0.94
+numpy==2.5.4
+pyvirtualcam==0.15.0
+pillow==12.3.0
+
+cv2-enumerate-cameras==1.4.0
+
+customtkinter==6.0.0

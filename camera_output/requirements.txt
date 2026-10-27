@@ -1,0 +1,2 @@
+numpy==2.5.4
+pyvirtualcam==0.15.0

@@ -1,0 +1,31 @@
+# Pinned environment of the frozen macOS engine (Python 3.14, Apple Silicon).
+# Versions follow ../../requirements.lock.txt. Left out on purpose:
+#   opencv-contrib-python  -> replaced by the wheel from build-opencv.sh (no FFmpeg/GPL codecs)
+#   customtkinter, darkdetect, pillow, matplotlib (+ its dependencies), sounddevice, cffi
+#                          -> the macOS engine runs without a Tk window; see sumi-engine.spec
+# pyvirtualcam is installed only to freeze the separate GPL video-output program (camera_output/);
+# the engine bundle excludes it.
+# mediapipe is installed with --no-deps by bootstrap.sh because it declares the FFmpeg OpenCV
+# wheel, matplotlib and sounddevice as dependencies.
+absl-py==2.5.1
+certifi==2026.10.23
+flatbuffers==25.12.19
+numpy==2.5.4
+mediapipe==1.1.1
+cv2_enumerate_cameras==1.4.0
+pyvirtualcam==0.15.0
+pyobjc-core==12.2.2
+pyobjc-framework-AVFoundation==12.2.2
+pyobjc-framework-Cocoa==12.2.2
+pyobjc-framework-CoreAudio==12.2.2
+pyobjc-framework-CoreMedia==12.2.2
+pyobjc-framework-Quartz==12.2.2
+# Packaging tools (same pins as requirements-build.txt).
+pyinstaller==6.22.3
+pyinstaller-hooks-contrib==2026.9
+altgraph==0.17.5
+macholib==1.16.4
+packaging==26.3
+setuptools==84.2.1
+# DMG layout without AppleScript (writes .DS_Store directly).
+dmgbuild==1.6.7

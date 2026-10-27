@@ -1,0 +1,17 @@
+SUMI 0.5.0
+
+Este pacote inclui Python, bibliotecas e modelos. Não é necessário instalar Python.
+No executável único, basta abrir; os recursos são extraídos temporariamente.
+O instalador funciona somente para seu usuário e inclui desinstalador.
+
+Para chamadas, instale OBS Studio uma vez pelo site oficial. Não precisa manter
+OBS aberto. A extensão é opcional, somente para sair automaticamente do Meet.
+
+O aplicativo e o programa independente de saída de vídeo têm licenças próprias.
+O componente de saída é GPL-2.0-only; seu fonte completo, incluindo PyVirtualCam
+0.15.0 e libyuv na revisão usada, acompanha a distribuição em Sumi-Fontes-Saida-<versão>.zip.
+As licenças e instruções estão também no pacote Sumi-Licencas-<versão>.zip e nos recursos do app.
+Quem recebe o aplicativo deve ter acesso equivalente a esses pacotes.
+
+Esta versão ainda não tem assinatura digital. Teste câmera, gestos e chamada no
+seu computador. Não há garantia de FPS ou de ocultação perfeita.

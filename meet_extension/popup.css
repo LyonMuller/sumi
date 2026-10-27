@@ -1,0 +1,8 @@
+body { width:320px; margin:20px; font:14px/1.5 "Segoe UI",sans-serif; color:#1c2530; background:#fff; }
+h1 { font-size:21px; margin:0 0 10px; }
+label { display:block; font-weight:600; margin:16px 0 5px; }
+input { box-sizing:border-box; width:100%; padding:9px; border:1px solid #79818a; border-radius:4px; font:inherit; }
+button { width:100%; margin-top:12px; padding:10px; border:0; border-radius:4px; background:#175b99; color:white; font:600 14px "Segoe UI",sans-serif; cursor:pointer; }
+button:disabled { opacity:.6; cursor:wait; }
+input:focus-visible,button:focus-visible { outline:3px solid #275b94; outline-offset:3px; }
+.note { font-size:12px; color:#4b5560; }

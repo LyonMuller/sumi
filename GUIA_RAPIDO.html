@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sumi · Guia rápido</title>
+<style>
+body{margin:0;background:#f4f5f7;color:#202536;font:17px/1.65 "Segoe UI",sans-serif}
+main{max-width:720px;margin:64px auto;padding:0 28px 64px}h1{font-size:38px;line-height:1.2;letter-spacing:-1px}
+h2{margin:40px 0 12px;font-size:24px}li{padding:4px 0}a{color:#4248bc;text-underline-offset:3px}
+a:focus-visible{outline:3px solid #5259d9;outline-offset:4px}strong{font-weight:650}code{font-size:.9em}
+</style><main>
+<h1>Sumi</h1>
+<p>Seu app já inclui Python e os modelos. Na versão de arquivo único, basta abrir <strong>Sumi-Portatil-0.5.0.exe</strong>, sem instalar ou extrair manualmente.
+Se usar o instalador ou ZIP com pasta, abra <strong>Sumi.exe</strong>. No Mac, arraste o <strong>Sumi</strong> do <code>.dmg</code> para Aplicativos; na primeira abertura, use <strong>Ajustes do Sistema › Privacidade e Segurança › Abrir mesmo assim</strong> e permita a câmera.</p>
+<h2>Primeira vez</h2><ol>
+<li>Em <strong>Configurar → Câmera</strong>, escolha sua webcam e inicie.</li>
+<li>Clique em <strong>Capturar fundo (4 s)</strong>, saia do enquadramento e confirme a imagem vazia.</li>
+<li>Volte, escolha um efeito e clique em <strong>Ativar efeito</strong> ou faça o gesto ensinado em <strong>Como fazer</strong>.</li>
+<li><strong>Reaparecer</strong> traz sua imagem de volta. <strong>Restaurar · F8</strong> interrompe o efeito.</li>
+</ol>
+<p>O fundo <strong>Estático</strong> é o padrão recomendado. A opção <strong>Em movimento</strong> é experimental e pode ser ativada manualmente.</p>
+<h2>Enviar para uma chamada</h2><p>Você precisa de <strong>OBS Virtual Camera</strong>, incluída no
+<a href="https://obsproject.com/download">instalador oficial do OBS Studio</a>. Instale uma vez; não precisa manter o OBS aberto.</p>
+<ol><li>No app, vá a <strong>Configurar → Câmera → Atualizar lista</strong> após instalar o OBS.</li>
+<li>Em <strong>Configurar → Meet</strong>, clique em <strong>Preparar vídeo para o Meet</strong>.</li>
+<li>Inicie sua webcam no Sumi. Na chamada, escolha <strong>OBS Virtual Camera</strong> como câmera.</li>
+<li>Desative os efeitos de fundo do Meet, Teams ou Discord. Se estiver usando o OBS aberto, deixe a câmera virtual parada nele.</li></ol>
+<p>Se a câmera virtual já estiver ativa no OBS, pare-a lá e use <strong>Reconectar saída</strong> no Sumi.</p>
+<h2>Sair automaticamente do Meet (opcional)</h2>
+<p>A extensão só fecha a aba vinculada; os efeitos funcionam sem ela.</p><ol>
+<li>No app, clique em <strong>Abrir pasta da extensão</strong>.</li>
+<li>Abra <code>chrome://extensions</code> (ou <code>edge://extensions</code>), ative o Modo do desenvolvedor e escolha <strong>Carregar sem compactação</strong>. Selecione a pasta aberta no passo anterior.</li>
+<li>No app, copie o código de conexão. Abra a extensão na aba da reunião, cole o código e clique em <strong>Vincular</strong>.</li>
+<li>Ative <strong>Sair do Meet após desaparecer</strong>. Durante a contagem, <strong>F8</strong> cancela.</li></ol>
+<h2>Se algo falhar</h2><p>Feche outros programas que usam sua webcam, confira a permissão de câmera do Windows e atualize a lista.
+Tente 640 × 480 em computadores mais lentos. Mantenha a câmera fixa e refaça o fundo se mover a câmera ou mudar a iluminação.</p>
+<h2>Seus dados</h2><p>No executável, configurações e chave local ficam em <code>%LOCALAPPDATA%\Sumi</code> (no Mac, <code>~/Library/Application Support/Sumi</code>).
+A versão instalada cria seu próprio código de conexão; vincule a extensão novamente. A calibração fica somente em memória.
+O app não envia imagens a servidores próprios e não abre seu microfone.</p>
+<p>Versão local de teste: avaliação com webcam e chamada real ainda necessária. Consulte os avisos de licença antes de compartilhar o pacote.</p>
+</main></html>

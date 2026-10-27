@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:49321"
+  },
+  "name": "Sumi · Meet",
+  "version": "0.5.0",
+  "description": "Fecha apenas a aba do Meet vinculada quando o Sumi local solicita.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://meet.google.com/*",
+    "http://127.0.0.1:49321/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Vincular Sumi ao Meet"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://meet.google.com/*"
+      ],
+      "js": [
+        "heartbeat.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
