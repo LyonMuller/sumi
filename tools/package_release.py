@@ -6,7 +6,7 @@ from pathlib import Path
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = '0.6.0'
+VERSION = '0.7.0'
 FILES = (
     '.gitignore', '.gitattributes', 'LICENSE', 'README.md', 'COMO_USAR.md',
     'GUIA_RAPIDO.html', 'PRIVACY.md', 'SECURITY.md', 'THIRD_PARTY_NOTICES.md',

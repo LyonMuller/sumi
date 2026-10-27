@@ -1,10 +1,12 @@
 #!/bin/bash
-# Builds the installable disk image: macos/dist/Sumi-VERSION.dmg and Sumi-VERSION.dmg.sha256.
+# Builds the installable disk image (macos/dist/Sumi-VERSION.dmg + .sha256) and the in-app update:
+# Sumi-VERSION.zip signed with the Sparkle EdDSA key, plus appcast.xml. Upload all of them to the
+# GitHub release v<VERSION>; installed apps read releases/latest/download/appcast.xml.
 #
-#   macos/release.sh 0.6.0
+#   macos/release.sh 0.7.0
 #
 # Steps: environment (python, OpenCV without FFmpeg) -> frozen engine -> Sumi.app (signed inside-out)
-# -> audit -> DMG with Applications link -> sign the DMG -> checksum.
+# -> audit -> DMG with Applications link -> sign the DMG -> checksum -> update archive and appcast.
 #
 # Signing and notarization are controlled by environment variables, all optional:
 #   SUMI_SIGN_IDENTITY   e.g. "Developer ID Application: Name (TEAMID)". Default: the keychain's
@@ -17,7 +19,7 @@
 # dmg-background@2x.png (1320x800) next to it.
 set -euo pipefail
 
-version="${1:?Uso: macos/release.sh VERSION (ex.: 0.6.0)}"
+version="${1:?Uso: macos/release.sh VERSION (ex.: 0.7.0)}"
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.]+)?$ ]] || { echo "Versão inválida: $version" >&2; exit 2; }
 
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -53,7 +55,7 @@ fi
 
 # 4. DMG: dmgbuild writes the window layout straight into .DS_Store (no Finder, no AppleScript).
 mkdir -p "$dist"
-rm -f "$dmg" "$dmg.sha256"
+rm -f "$dmg" "$dmg.sha256" "$dist/Sumi-$version.zip" "$dist/appcast.xml"
 work="$(mktemp -d)"
 background=""
 if [[ -f "$brand/dmg-background@2x.png" && -f "$brand/dmg-background.png" ]]; then
@@ -116,3 +118,12 @@ codesign --verify --verbose=2 "$dmg"
 spctl -a -t open --context context:primary-signature -vv "$dmg" || echo "spctl: rejeitado, esperado sem notarização (use 'Abrir mesmo assim')."
 ls -lh "$dmg" "$dmg.sha256"
 cat "$dmg.sha256"
+
+# 7. In-app update: zip of the app, EdDSA signature (private key in the login keychain, account
+#    dev.lyon.Sumi; backup in 1Password) and the appcast with this version's CHANGELOG section.
+archive="$dist/Sumi-$version.zip"
+ditto -c -k --sequesterRsrc --keepParent "$app" "$archive"
+signature="$("$here/.build/artifacts/sparkle/Sparkle/bin/sign_update" --account dev.lyon.Sumi "$archive")"
+python3 "$root/tools/make_appcast.py" --version "$version" --archive "$archive" \
+    --signature "$signature" --output "$dist/appcast.xml"
+ls -lh "$archive" "$dist/appcast.xml"

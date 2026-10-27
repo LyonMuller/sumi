@@ -2,7 +2,7 @@
 
 ## Executáveis prontos
 
-A [Release 0.6.0](https://github.com/LyonMuller/sumi/releases/tag/v0.6.0) ainda não
+A [Release 0.7.0](https://github.com/LyonMuller/sumi/releases/tag/v0.7.0) ainda não
 inclui os executáveis do Windows; gere-os com os passos abaixo. Quando publicados, o
 instalador por usuário e o executável único incluem Python, modelos, interface e o
 programa independente de saída. O OBS é instalado separadamente pelo usuário para
@@ -41,11 +41,11 @@ webcam, não instala o produto e não publica no GitHub.
 
 Os arquivos ficam em `dist/windows/`:
 
-- `Sumi-Portatil-0.6.0.exe`: arquivo único, com extração automática ao abrir.
-- `Sumi-Setup-0.6.0.exe`: instalador por usuário, atalhos e desinstalador.
-- `Sumi-Fontes-Saida-0.6.0.zip`: fontes correspondentes do programa GPL e de
+- `Sumi-Portatil-0.7.0.exe`: arquivo único, com extração automática ao abrir.
+- `Sumi-Setup-0.7.0.exe`: instalador por usuário, atalhos e desinstalador.
+- `Sumi-Fontes-Saida-0.7.0.zip`: fontes correspondentes do programa GPL e de
   suas dependências PyVirtualCam/libyuv.
-- `Sumi-Licencas-0.6.0.zip`: avisos, licenças e atribuição dos modelos.
+- `Sumi-Licencas-0.7.0.zip`: avisos, licenças e atribuição dos modelos.
 - Arquivos `.sha256`: integridade de cada artefato.
 
 O ZIP com uma pasta de executáveis também é gerado como intermediário local.
@@ -58,7 +58,7 @@ idênticos bit a bit em outros ambientes.
 .venv\Scripts\python.exe -B tools/package_release.py
 ```
 
-Gera `dist/sumi-0.6.0-source.zip` e seu checksum. Inclui código principal,
+Gera `dist/sumi-0.7.0-source.zip` e seu checksum. Inclui código principal,
 saída de vídeo, extensão, testes, recursos necessários, dependências declaradas,
 receitas e documentação de desenvolvimento. Exclui dados locais, dependências
 baixadas, prompts, relatórios e rascunhos internos.
@@ -93,3 +93,5 @@ O app do Mac é distribuído em `.dmg` pelas Releases. O build ainda não é ass
 Developer ID nem notarizado; por isso a primeira abertura exige **Ajustes do Sistema ›
 Privacidade e Segurança › Abrir mesmo assim**. A assinatura, a notarização e as licenças
 do OpenCV estão em [PLANO_MACOS.md](PLANO_MACOS.md), seção 5.
+O app se atualiza sozinho pelo Sparkle a partir do `appcast.xml` da release mais recente; como
+publicar está em [macos/README.md](macos/README.md#atualizações-dentro-do-app-sparkle).

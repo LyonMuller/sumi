@@ -34,7 +34,7 @@ class DistributionViewTests(unittest.TestCase):
             root = Path(folder)
             source = root / 'source.py'
             source.write_text('pass')
-            destination = root / 'dist/source-review/v0.6.0/repository'
+            destination = root / 'dist/source-review/v0.7.0/repository'
             destination.mkdir(parents=True)
             private = destination / 'user_settings.json'
             private.write_text('private fixture')

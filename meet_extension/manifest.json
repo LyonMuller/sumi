@@ -5,7 +5,7 @@
     "extension_pages": "script-src 'self'; object-src 'none'; connect-src http://127.0.0.1:49321"
   },
   "name": "Sumi · Meet",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Vincula sozinha a reunião aberta ao Sumi: toca os sons dos efeitos na chamada e fecha a aba quando você pede.",
   "permissions": [
     "storage",

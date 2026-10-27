@@ -51,6 +51,7 @@ TICK = 1 / 30
 COMMANDS_WITH_VALUE = {
     'set_camera': 'set_camera', 'set_effect': 'set_effect', 'set_resolution': 'set_resolution',
     'set_hold': 'set_hold', 'set_output': 'set_output', 'set_leave_delay': 'set_leave_delay',
+    'set_capture_time': 'set_capture_time', 'set_snap_delay': 'set_snap_delay',
 }
 ENGINE_COMMANDS = ('restore', 'calibrate', 'confirm', 'toggle', 'virtual')
 

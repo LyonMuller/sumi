@@ -10,11 +10,12 @@ O nome vem do português “(eu) sumi” e da tinta japonesa *sumi*.
 
 **macOS (Apple Silicon) e Windows x64 · Processamento local · Sem gravação de áudio · Sem APIs pagas**
 
-[Baixar a versão 0.6.0](https://github.com/LyonMuller/sumi/releases/tag/v0.6.0) ·
+[Baixar a versão 0.7.0](https://github.com/LyonMuller/sumi/releases/tag/v0.7.0) ·
 [Como usar](COMO_USAR.md) · [Privacidade](PRIVACY.md)
 
-> **Versão 0.6.0 · onda e esfera de energia, sons e Meet automático.** O app do Mac está
-> pronto para baixar; no Windows, rode pelos fontes por enquanto. Teste a prévia antes de
+> **Versão 0.7.0 · atualizações dentro do app, contagem do fundo na câmera e pausa no
+> estalo.** O app do Mac está pronto para baixar e, a partir desta versão, se atualiza
+> sozinho; no Windows, rode pelos fontes por enquanto. Teste a prévia antes de
 > usar em uma reunião importante.
 
 ## Baixar e abrir
@@ -63,7 +64,7 @@ do Meet. Não é necessária para os efeitos aparecerem na chamada.
 
 1. Escolha sua webcam (macOS: Ajustes ⌘, › Câmera; Windows: **Configurar → Câmera**)
    e clique em **Iniciar câmera**.
-2. Clique em **Capturar fundo (4 s)** e saia do enquadramento.
+2. Clique em **Capturar fundo** e saia do enquadramento durante a contagem (5 s, ajustável).
 3. Confira a imagem vazia e clique em **Confirmar fundo vazio**.
 4. Volte, escolha um efeito e clique em **Ativar efeito** ou faça o gesto indicado.
 5. Use **Reaparecer** para voltar. **Restaurar** interrompe o efeito: F8 no Windows;
@@ -142,7 +143,7 @@ efeitos, gestos, programa independente de saída, extensão opcional, testes e r
 - [Executar pelos fontes e entender a arquitetura](DESENVOLVIMENTO.md)
 - [Gerar o instalador e o executável único](DISTRIBUIR.md)
 - [Baixar todos os fontes atuais em ZIP](https://github.com/LyonMuller/sumi/archive/refs/heads/main.zip)
-- [Baixar o pacote de fontes 0.6.0](https://github.com/LyonMuller/sumi/releases/download/v0.6.0/sumi-0.6.0-source.zip)
+- [Baixar o pacote de fontes 0.7.0](https://github.com/LyonMuller/sumi/releases/download/v0.7.0/sumi-0.7.0-source.zip)
 
 Para estudar: `sumi/` contém o motor e o aplicativo do Windows; `macos/`, o
 aplicativo nativo do Mac; `camera_output/` documenta a saída independente;

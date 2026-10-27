@@ -7,6 +7,7 @@ struct SettingsView: View {
             CameraSettings().tabItem { Label("Câmera", systemImage: "web.camera") }
             MeetSettings().tabItem { Label("Meet", systemImage: "video.bubble") }
             ShortcutSettings().tabItem { Label("Atalhos", systemImage: "keyboard") }
+            UpdateSettings().tabItem { Label("Atualizações", systemImage: "arrow.down.circle") }
         }
         .frame(width: 520)
         .fixedSize(horizontal: false, vertical: true)
@@ -19,26 +20,42 @@ private struct CameraSettings: View {
     var body: some View {
         if let state = engine.state {
             Form {
-                Picker("Webcam", selection: engine.binding(\.camera, EngineCommand.setCamera)) {
-                    if !state.cameras.contains(state.camera) { Text(state.camera).tag(state.camera) }
-                    ForEach(state.cameras, id: \.self) { Text($0).tag($0) }
+                Section {
+                    Picker("Webcam", selection: engine.binding(\.camera, EngineCommand.setCamera)) {
+                        if !state.cameras.contains(state.camera) { Text(state.camera).tag(state.camera) }
+                        ForEach(state.cameras, id: \.self) { Text($0).tag($0) }
+                    }
+                    Button("Atualizar lista") { engine.perform(.refreshCameras) }
+                        .disabled(!state.refreshEnabled)
+                    Picker("Resolução", selection: engine.binding(\.resolution, EngineCommand.setResolution)) {
+                        ForEach(EngineState.resolutions, id: \.self) { Text($0).tag($0) }
+                    }
+                    Picker("Tempo do gesto", selection: engine.binding(\.hold, EngineCommand.setHold)) {
+                        ForEach(EngineState.holdTimes, id: \.self) { Text("\($0) s").tag($0) }
+                    }
+                    Picker("Saída", selection: engine.binding(\.output, EngineCommand.setOutput)) {
+                        ForEach(state.outputs, id: \.self) { Text($0).tag($0) }
+                    }
+                    if !state.inputsEnabled {
+                        Text("Pare a câmera para mudar estes ajustes.").font(.caption).foregroundStyle(.secondary)
+                    }
                 }
-                Button("Atualizar lista") { engine.perform(.refreshCameras) }
-                    .disabled(!state.refreshEnabled)
-                Picker("Resolução", selection: engine.binding(\.resolution, EngineCommand.setResolution)) {
-                    ForEach(EngineState.resolutions, id: \.self) { Text($0).tag($0) }
-                }
-                Picker("Tempo do gesto", selection: engine.binding(\.hold, EngineCommand.setHold)) {
-                    ForEach(EngineState.holdTimes, id: \.self) { Text("\($0) s").tag($0) }
-                }
-                Picker("Saída", selection: engine.binding(\.output, EngineCommand.setOutput)) {
-                    ForEach(state.outputs, id: \.self) { Text($0).tag($0) }
-                }
-                if !state.inputsEnabled {
-                    Text("Pare a câmera para mudar estes ajustes.").font(.caption).foregroundStyle(.secondary)
+                .disabled(!state.inputsEnabled)
+                Section {
+                    Picker("Contagem antes de capturar o fundo",
+                           selection: engine.binding(\.captureTime, EngineCommand.setCaptureTime)) {
+                        ForEach(EngineState.captureTimes, id: \.self) { Text("\($0) s").tag($0) }
+                    }
+                    Picker("Pausa depois do estalo", selection: engine.binding(\.snapDelay, EngineCommand.setSnapDelay)) {
+                        ForEach(EngineState.snapDelays, id: \.self) {
+                            Text($0 == "0" ? "Nenhuma" : "\($0) s").tag($0)
+                        }
+                    }
+                } footer: {
+                    Text("A pausa vale só para sumir com o estalo: dá tempo de falar antes do efeito.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
             }
-            .disabled(!state.inputsEnabled)
             .formStyle(.grouped)
         } else {
             EngineNotReady()
@@ -137,5 +154,27 @@ private struct ShortcutSettings: View {
 private struct EngineNotReady: View {
     var body: some View {
         Text("O motor ainda está iniciando.").foregroundStyle(.secondary).padding(40)
+    }
+}
+
+private struct UpdateSettings: View {
+    @Environment(Updater.self) private var updater
+
+    var body: some View {
+        @Bindable var updater = updater
+        Form {
+            LabeledContent("Versão instalada") {
+                Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")
+            }
+            if updater.enabled {
+                Toggle("Procurar atualizações automaticamente", isOn: $updater.automaticallyChecks)
+                Button("Verificar agora") { updater.check() }
+                    .disabled(!updater.canCheck)
+            } else {
+                Text("Build de desenvolvimento: atualize com git pull e macos/build-app.sh.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
     }
 }

@@ -45,12 +45,16 @@ public struct EngineState: Decodable, Equatable, Sendable {
     public var leaveEnabled: Bool
     public var leaveDelay: String
     public var leaveCountdown: Double?
+    public var captureTime: String
+    public var snapDelay: String
     public var previewRevision: Int
 
     /// Values the engine accepts for the pickers. Kept here so the UI never offers others.
     public static let resolutions = ["1280 × 720", "640 × 480"]
     public static let holdTimes = ["0.8", "1.0", "1.5", "2.0"]
     public static let leaveDelays = ["2", "3", "5"]
+    public static let captureTimes = ["3", "5", "10"]
+    public static let snapDelays = ["0", "1", "2", "3"]
 
     /// True while the camera session is between "Ao vivo" and "Desaparecido".
     public var isLive: Bool { running && phase != "opening" && phase != "error" }

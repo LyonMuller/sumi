@@ -1,15 +1,15 @@
-# Sumi 0.6.0
+# Sumi 0.7.0
 
-Efeitos de energia, sons e Meet automático. Esta versão traz o app do Mac em `.dmg`;
-os executáveis do Windows desta versão ainda não foram gerados (veja abaixo).
+Atualizações dentro do app, contagem do fundo na câmera e pausa depois do estalo. Esta versão
+traz o app do Mac em `.dmg`; os executáveis do Windows ainda não foram gerados (veja abaixo).
 
-- **Onda de energia:** junte as mãos em concha na frente do peito para carregar; abra e
-  empurre para disparar.
-- **Esfera de energia:** erga as duas mãos acima da cabeça para reunir uma esfera gigante;
-  baixe os braços para lançá-la na direção da câmera.
-- **Sons dos efeitos**, tocados no computador e, se quiser, também na chamada do Meet.
-  Sons próprios na pasta `sons/` dos dados do app substituem os embutidos.
-- **Meet automático:** a extensão encontra e vincula a reunião aberta sozinha, sem código.
+- **Atualizações automáticas no Mac:** o app procura versões novas uma vez por dia e em
+  **Sumi › Verificar atualizações…**; baixa, confere a assinatura, instala e reabre.
+  Quem está na 0.6.0 instala esta versão uma vez pelo `.dmg`; as próximas chegam pelo app.
+- **Contagem do fundo na câmera:** número grande, anel de progresso e flashes, com flash de
+  foto na captura. Duração de 3, 5 ou 10 segundos nos ajustes da câmera.
+- **Pausa depois do estalo:** de 0 a 3 segundos entre o estalo e o sumiço, para dar tempo de
+  uma fala antes do efeito.
 - Fontes completos e licenças acompanham os downloads.
 
 **Windows:** rode pelos fontes ([DESENVOLVIMENTO.md](DESENVOLVIMENTO.md)) ou gere o

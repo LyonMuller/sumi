@@ -12,6 +12,8 @@ public enum EngineCommand: Equatable, Sendable {
     case setHold(String)
     case setOutput(String)
     case setLeaveDelay(String)
+    case setCaptureTime(String)
+    case setSnapDelay(String)
     case setBackground(dynamic: Bool)
     case setLeave(enabled: Bool)
     case setSounds(enabled: Bool)
@@ -35,6 +37,8 @@ public enum EngineCommand: Equatable, Sendable {
         case .setHold(let value): message["cmd"] = "set_hold"; message["value"] = value
         case .setOutput(let value): message["cmd"] = "set_output"; message["value"] = value
         case .setLeaveDelay(let value): message["cmd"] = "set_leave_delay"; message["value"] = value
+        case .setCaptureTime(let value): message["cmd"] = "set_capture_time"; message["value"] = value
+        case .setSnapDelay(let value): message["cmd"] = "set_snap_delay"; message["value"] = value
         case .setBackground(let dynamic): message["cmd"] = "set_background"; message["dynamic"] = dynamic
         case .setLeave(let enabled): message["cmd"] = "set_leave"; message["enabled"] = enabled
         case .setSounds(let enabled): message["cmd"] = "set_sounds"; message["enabled"] = enabled

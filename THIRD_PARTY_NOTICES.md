@@ -1,4 +1,4 @@
-# Licenças e componentes — Sumi 0.6.0
+# Licenças e componentes — Sumi 0.7.0
 
 ## Dois programas independentes
 
@@ -33,6 +33,7 @@ Este registro documenta a análise de engenharia da distribuição; não é cert
 | CustomTkinter / cv2-enumerate-cameras | MIT | Interface e enumeração |
 | Pillow | HPND e avisos próprios | Imagens da interface |
 | Python | PSF e avisos próprios | Interpretadores empacotados |
+| Sparkle 2 | MIT e avisos próprios | Atualização do app do Mac (só arm64, sem os serviços XPC) |
 
 O plugin opencv_videoio_ffmpeg não é incluído: a captura usa explicitamente
 DirectShow/MSMF. O build recusa sua presença. O processo de saída também exclui
@@ -42,10 +43,10 @@ binários estejam incluídos.
 
 ## Arquivos que devem acompanhar os downloads
 
-- `Sumi-Fontes-Saida-0.6.0.zip`: fonte do programa de saída, receita de build,
+- `Sumi-Fontes-Saida-0.7.0.zip`: fonte do programa de saída, receita de build,
   PyVirtualCam v0.15.0 no commit dbac4732168c21f1337e30182957130f678aa058 e o submódulo
   libyuv no commit 19bbedfd3e37329900d34e104021f04d7205ad78, com seus avisos originais.
-- `Sumi-Licencas-0.6.0.zip`: avisos coletados, licença GPL completa, termos
+- `Sumi-Licencas-0.7.0.zip`: avisos coletados, licença GPL completa, termos
   das bibliotecas, atribuição e origem dos modelos.
 - `SHA256SUMS.txt`: integridade de todos os artefatos.
 

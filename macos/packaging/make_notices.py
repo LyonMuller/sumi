@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Writes the third-party notices of the macOS bundle (Contents/Resources/Licenses).
 
-    make_notices.py --engine <SumiEngine folder> --version 0.6.0 --output <folder>
+    make_notices.py --engine <SumiEngine folder> --version 0.7.0 --output <folder>
 
 Runs with the packaging venv (macos/.cache/venv), the environment the engine was frozen from. The list
 of bundled components is read from the frozen engine itself (its embedded module archive and its folder
@@ -172,6 +172,11 @@ def main() -> int:
     shutil.copyfile(ROOT / 'camera_output' / 'LICENSE', video_folder / 'GPL-2.0.txt')
     shutil.copyfile(ROOT / 'camera_output' / 'README.md', video_folder / 'README.md')
 
+    sparkle_license = HERE.parent / '.build' / 'artifacts' / 'sparkle' / 'Sparkle' / 'LICENSE'
+    sparkle_folder = output / 'sparkle'
+    sparkle_folder.mkdir()
+    shutil.copyfile(sparkle_license, sparkle_folder / 'LICENSE')
+
     pinned = pins()
     lines = [
         f'# Licenças e componentes: Sumi {version} para macOS', '',
@@ -219,6 +224,11 @@ def main() -> int:
               'Abseil e outras, ligadas estaticamente em libmediapipe.dylib; seus avisos estão no arquivo '
               'NOTICE em packages/mediapipe. O pacote certifi (MPL-2.0) é usado sem alterações. '
               'O NumPy usa o framework Accelerate do macOS e não inclui bibliotecas de álgebra próprias.', '',
+              '## Sparkle', '',
+              'Contents/Frameworks/Sparkle.framework é o Sparkle 2 (https://sparkle-project.org), usado sem '
+              'alterações para as atualizações dentro do app; só a fatia arm64 é mantida e os serviços XPC, '
+              'usados por apps em sandbox, foram removidos. Licença MIT e avisos dos componentes incluídos '
+              'em sparkle/LICENSE.', '',
               '## Modelos', '',
               'Três arquivos oficiais do Google MediaPipe (Apache-2.0), sem alterações, com hashes fixados '
               'no aplicativo. URLs, hashes e fichas estão em MODELS.md.', '',

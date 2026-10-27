@@ -98,6 +98,14 @@ if [[ -d "$engine_root" ]]; then
         --entitlements "$here/entitlements-engine.plist" "$engine_exe"
 fi
 
+# Sparkle, inside-out: its helper app and installer tool, then the framework.
+sparkle="$app/Contents/Frameworks/Sparkle.framework"
+if [[ -d "$sparkle" ]]; then
+    sign "${common[@]}" "$sparkle/Versions/B/Updater.app"
+    sign "${common[@]}" "$sparkle/Versions/B/Autoupdate"
+    sign "${common[@]}" "$sparkle"
+fi
+
 sign "${common[@]}" --identifier "$bundle_id" --entitlements "$here/entitlements-app.plist" "$app"
 
 codesign --verify --deep --strict --verbose=2 "$app"

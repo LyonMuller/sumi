@@ -1,4 +1,4 @@
-SUMI 0.6.0
+SUMI 0.7.0
 
 Este pacote inclui Python, bibliotecas e modelos. Não é necessário instalar Python.
 No executável único, basta abrir; os recursos são extraídos temporariamente.

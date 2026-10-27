@@ -40,7 +40,7 @@ O log do motor fica em `~/Library/Logs/Sumi/engine.log`.
 ## Gerar o DMG
 
 ```bash
-macos/release.sh 0.6.0       # macos/dist/Sumi-0.6.0.dmg e Sumi-0.6.0.dmg.sha256
+macos/release.sh 0.7.0       # macos/dist/Sumi-0.7.0.dmg e Sumi-0.7.0.dmg.sha256
 ```
 
 Requisitos extras: `brew install uv cmake` e as Command Line Tools. Na primeira vez o script:
@@ -54,7 +54,9 @@ Requisitos extras: `brew install uv cmake` e as Command Line Tools. Na primeira 
    FFmpeg e que nenhuma biblioteca GPL de mídia entrou;
 4. monta e assina o `Sumi.app` de dentro para fora (`packaging/sign.sh`), gera os avisos de terceiros,
    audita todos os binários Mach-O (`packaging/audit_bundle.py`);
-5. cria o DMG com atalho para Aplicativos, assina e grava o SHA-256.
+5. cria o DMG com atalho para Aplicativos, assina e grava o SHA-256;
+6. gera a atualização dentro do app: `Sumi-VERSÃO.zip` assinado com a chave EdDSA do Sparkle e o
+   `appcast.xml`, com as notas da seção da versão no `CHANGELOG.md`.
 
 As próximas execuções reaproveitam o cache. Passos soltos:
 
@@ -70,6 +72,31 @@ Fundo do DMG (opcional): `assets/brand/dmg-background.png` (660×400) e, para te
 `assets/brand/dmg-background@2x.png` (1320×800). O layout da janela é gravado direto no `.DS_Store`
 pelo `dmgbuild`, sem automação do Finder. Sem as imagens, o DMG sai sem fundo.
 
+### Atualizações dentro do app (Sparkle)
+
+O app procura uma versão nova uma vez por dia e pelo menu **Sumi › Verificar atualizações…** (também
+na barra de menus e em Ajustes › Atualizações). Ele lê
+`https://github.com/LyonMuller/sumi/releases/latest/download/appcast.xml`, baixa o `.zip`, confere a
+assinatura EdDSA, troca o app e reabre. Builds `--dev` não se atualizam.
+
+Para publicar uma versão:
+
+1. escreva a seção `## VERSÃO — título` no `CHANGELOG.md` (vira as notas mostradas no app);
+2. rode `macos/release.sh VERSÃO`;
+3. suba tudo na release `vVERSÃO` (precisa ser a mais recente, não pré-lançamento):
+
+```bash
+gh release upload vVERSÃO macos/dist/Sumi-VERSÃO.dmg macos/dist/Sumi-VERSÃO.dmg.sha256 \
+    macos/dist/Sumi-VERSÃO.zip macos/dist/appcast.xml
+```
+
+A chave privada fica no chaveiro de sessão (conta `dev.lyon.Sumi`, lida pelo `sign_update`), com
+cópia no 1Password pessoal ("Sumi — chave Sparkle (EdDSA)"). Num Mac novo, importe com
+`macos/.build/artifacts/sparkle/Sparkle/bin/generate_keys --account dev.lyon.Sumi -f <arquivo>`.
+Sem ela não dá para publicar atualizações: a chave pública está no `build-app.sh` e o app recusa
+pacotes assinados com outra. Trocar a identidade de assinatura do app (por exemplo, para Developer
+ID) também é aceito, porque o Sparkle confere a chave EdDSA.
+
 ### Assinatura e notarização
 
 Sem conta paga da Apple, o DMG é assinado com o certificado "Apple Development" (ou ad-hoc, se não
@@ -80,7 +107,7 @@ Para passar a Developer ID com notarização, defina antes de rodar o `release.s
 export SUMI_SIGN_IDENTITY="Developer ID Application: Seu Nome (TEAMID)"
 xcrun notarytool store-credentials sumi-notary      # uma vez; guarda as credenciais no chaveiro
 export SUMI_NOTARY_PROFILE=sumi-notary
-macos/release.sh 0.6.0
+macos/release.sh 0.7.0
 ```
 
 Com `SUMI_NOTARY_PROFILE` o script notariza e grampeia (`stapler`) o app e depois o DMG. O hardened
@@ -119,5 +146,5 @@ Studio 30 ou superior, ative a câmera virtual uma vez e aprove a extensão em A
 codesign --verify --deep --strict --verbose=2 macos/build/Sumi.app
 spctl -a -vv macos/build/Sumi.app          # "rejected" é esperado sem notarização
 python3 macos/packaging/audit_bundle.py macos/build/Sumi.app --max-minos 15.0
-shasum -a 256 -c macos/dist/Sumi-0.6.0.dmg.sha256   # dentro de macos/dist
+shasum -a 256 -c macos/dist/Sumi-0.7.0.dmg.sha256   # dentro de macos/dist
 ```

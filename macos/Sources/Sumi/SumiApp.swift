@@ -17,6 +17,12 @@ struct SumiApp: App {
         .windowToolbarStyle(.unified)
         .commands {
             SessionCommands(engine: delegate.engine)
+            if delegate.updater.enabled {
+                CommandGroup(after: .appInfo) {
+                    Button("Verificar atualizações…") { delegate.updater.check() }
+                        .disabled(!delegate.updater.canCheck)
+                }
+            }
             CommandGroup(after: .help) {
                 Button("Mostrar boas-vindas…") { onboardingDone = false }
             }
@@ -26,11 +32,13 @@ struct SumiApp: App {
             SettingsView()
                 .environment(delegate.engine)
                 .environment(delegate.system)
+                .environment(delegate.updater)
         }
 
         MenuBarExtra {
             MenuBarContent()
                 .environment(delegate.engine)
+                .environment(delegate.updater)
         } label: {
             Image(systemName: delegate.engine.state?.hidden == true ? "theatermasks.fill" : "theatermasks")
         }
@@ -40,6 +48,7 @@ struct SumiApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let engine = EngineClient()
     let system = SystemCheck()
+    let updater = Updater()
     private var hotKeys: HotKeys?
 
     func applicationDidFinishLaunching(_ notification: Notification) {

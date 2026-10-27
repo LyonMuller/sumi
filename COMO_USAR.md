@@ -12,8 +12,8 @@
 
 ### Windows
 
-- **Executável único:** abra `Sumi-Portatil-0.6.0.exe`. Não precisa instalar Python ou extrair pastas manualmente.
-- **Instalador:** execute `Sumi-Setup-0.6.0.exe`, conclua e abra pelo menu Iniciar.
+- **Executável único:** abra `Sumi-Portatil-0.7.0.exe`. Não precisa instalar Python ou extrair pastas manualmente.
+- **Instalador:** execute `Sumi-Setup-0.7.0.exe`, conclua e abra pelo menu Iniciar.
 
 Feche a versão anterior antes de abrir outra. A versão portátil salva preferências
 no seu usuário; mover ou apagar o .exe não apaga essas preferências.
@@ -21,7 +21,7 @@ no seu usuário; mover ou apagar o .exe não apaga essas preferências.
 ## Preparar a câmera
 
 1. Vá a Configurar → Câmera (no Mac, Ajustes ⌘,) e selecione sua webcam pelo nome.
-2. Inicie a câmera, clique em Capturar fundo (4 s) e saia do enquadramento.
+2. Inicie a câmera, clique em Capturar fundo e saia do enquadramento durante a contagem na tela (5 s; ajuste em Câmera).
 3. Confirme a imagem vazia, volte e escolha o efeito.
 4. Use o botão Ativar efeito ou o gesto ensinado em Como fazer.
 5. Reaparecer devolve sua imagem; Restaurar interrompe a animação (F8 no Windows; fn+F8 ou ⌃⌥R no Mac).

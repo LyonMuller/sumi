@@ -1,8 +1,11 @@
-# The "key" in the Meet extension manifest is the extension's public key (it pins the
-# extension ID). It is not a secret; the private key is never in the repository.
+# Public keys that look like secrets to the generic rule. Neither is secret; the private
+# keys are never in the repository.
+# - meet_extension/manifest.json "key": the extension's public key (pins the extension ID).
+# - SUPublicEDKey in macos/build-app.sh: the Sparkle EdDSA public key that verifies updates.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Chrome extension public key"
+description = "Public keys (Chrome extension, Sparkle updates)"
 paths = ['''meet_extension/manifest\.json''']
+regexes = ['''uLMLiAF5e6nKIkeBwXEcKxwTlSxwn7DzATwQhbr0Rvw=''']

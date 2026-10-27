@@ -4,6 +4,7 @@ import SwiftUI
 /// Quick controls during a call, without bringing the window forward.
 struct MenuBarContent: View {
     @Environment(EngineClient.self) private var engine
+    @Environment(Updater.self) private var updater
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
@@ -20,6 +21,10 @@ struct MenuBarContent: View {
             NSApp.activate()
         }
         SettingsLink { Text("Ajustes…") }
+        if updater.enabled {
+            Button("Verificar atualizações…") { updater.check() }
+                .disabled(!updater.canCheck)
+        }
         Divider()
         Button("Sair do Sumi") { NSApp.terminate(nil) }
             .keyboardShortcut("q")

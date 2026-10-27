@@ -15,6 +15,7 @@ from .effects_energy import EnergyCharge
 from .effects_spirit import SpiritCharge
 from .effect_catalog import EFFECTS
 from .background import LiveBackground
+from .countdown import CAPTURE_FLASH, render_capture_flash, render_countdown
 from .paths import resource_root
 from .system import camera_backends
 
@@ -29,12 +30,17 @@ class Settings:
     virtual: str = 'obs'
     effect: str = 'goku'
     dynamic_background: bool = False
+    capture_seconds: float = 5.0
+    snap_delay: float = 0.0
 
 class Engine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self.dynamic_background = settings.dynamic_background
         self.effect_mode = settings.effect
+        # Both may change while the camera runs (Controller writes them directly).
+        self.capture_seconds = settings.capture_seconds
+        self.snap_delay = settings.snap_delay
         self.preview_revision = 0
         # Set on every published frame so a shell can present it without polling.
         self.frame_ready = Event()
@@ -205,6 +211,8 @@ class Engine:
         effect:TeleportEffect | None=None
         requested:float | None=None
         calibration:float | None=None
+        calibration_total=self.capture_seconds
+        captured_at:float | None=None
         samples:list[Frame]=[]
         calibration_face=False
         previous_observation=0.0
@@ -279,6 +287,7 @@ class Engine:
                         clones_effect=None
                         arrival_message_at=None
                         calibration=now
+                        calibration_total=max(1.0,float(self.capture_seconds))
                         samples.clear()
                         calibration_face=False
                         scene.pending=None
@@ -307,12 +316,13 @@ class Engine:
                         self.virtual_active=virtual is not None
                 if calibration is not None:
                     elapsed=now-calibration
-                    self._set_message(f'Saia do enquadramento. Capturando em {max(0,4-elapsed):.1f} s…')
-                    if elapsed>=3.3:
+                    self._set_message(f'Saia do enquadramento. Capturando em {max(0,calibration_total-elapsed):.0f} s…')
+                    if elapsed>=calibration_total-.7:
                         samples.append(frame.copy())
                         samples=samples[-16:]
                         if now-observed_at<0.3 and faces>0: calibration_face=True
-                    if elapsed>=4:
+                    if elapsed>=calibration_total:
+                        captured_at=now
                         try:
                             if calibration_face: raise ValueError('Rosto detectado. Repita com o cenário vazio.')
                             scene.propose(samples)
@@ -371,7 +381,11 @@ class Engine:
                     wants_goku=self.effect_mode in EFFECTS and not self.effect_error
                     fresh=(silhouette is not None and now-silhouette.captured_at<=0.35 and silhouette.frame.shape==frame.shape)
                     action=getattr(EFFECTS.get(self.effect_mode),'action',False)
-                    if wants_goku and not fresh and not action and now-requested<0.8:
+                    snap_wait=(self.effect_mode=='dust' and not clones_on and not scene.hidden
+                               and self.snap_delay>0 and now-requested<self.snap_delay)
+                    if snap_wait:
+                        self._set_message('Estalo! O efeito começa em instantes…')
+                    elif wants_goku and not fresh and not action and now-requested-(self.snap_delay if self.effect_mode=='dust' else 0)<0.8:
                         self._set_message('Preparando recorte para o efeito…')
                     elif clones_on and clones_effect is not None:
                         # Any toggle while clones stand dismisses them; the person never hides.
@@ -479,6 +493,11 @@ class Engine:
                     clones_effect=None
                     self._set_message(str(error))
                     output=np.zeros_like(frame)
+                if calibration is not None:
+                    output=render_countdown(output,calibration_total-(now-calibration),calibration_total)
+                elif captured_at is not None:
+                    if now-captured_at<CAPTURE_FLASH: output=render_capture_flash(output,now-captured_at)
+                    else: captured_at=None
                 self.hidden=scene.hidden
                 self.charging=wave_fx.charging
                 self.clones=clones_on

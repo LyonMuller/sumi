@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## 0.7.0 — atualizações dentro do app
+
+- **Atualizações automáticas no Mac.** O app procura versões novas uma vez por dia e em
+  **Sumi › Verificar atualizações…**; baixa, confere a assinatura, instala e reabre.
+- **Contagem do fundo na câmera.** Número grande, anel de progresso e flashes, com flash de
+  foto na captura. Duração de 3, 5 ou 10 segundos nos ajustes da câmera.
+- **Pausa depois do estalo.** De 0 a 3 segundos entre o estalo e o sumiço, para dar tempo
+  de uma fala antes do efeito.
+
 ## 0.6.0 — energia, sons e Meet automático
 
 - **Onda de energia.** Junte as mãos em concha na frente do peito para carregar e abra

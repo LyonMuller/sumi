@@ -5,7 +5,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import customtkinter as ctk
 import cv2
-from .controller import Controller, ViewState, RESOLUTIONS, HOLD_TIMES, LEAVE_DELAYS
+from .controller import Controller, ViewState, RESOLUTIONS, HOLD_TIMES, LEAVE_DELAYS, CAPTURE_TIMES, SNAP_DELAYS
 from .hotkey import RestoreHotkey
 from .theme import apply_theme, COLORS
 from .gesture_guides import illustration_size
@@ -45,6 +45,8 @@ class App:
         self.backend = tk.StringVar(value=state.output)
         self.leave_enabled = tk.BooleanVar(value=False)
         self.leave_delay = tk.StringVar(value=state.leave_delay)
+        self.capture_time = tk.StringVar(value=state.capture_time)
+        self.snap_delay = tk.StringVar(value=state.snap_delay)
         root.title('Sumi')
         set_window_icon(root)
         root.geometry('1080x790')
@@ -176,6 +178,10 @@ class App:
         self.status = tk.StringVar(value=state.status)
         self.status_label = ctk.CTkLabel(self.config, textvariable=self.status, wraplength=315, justify='left', text_color=c['muted'], font=(FONT, 12))
         self.status_label.grid(row=10, column=0, sticky='ew', pady=(14, 0))
+        label(self.config, 'Contagem antes de capturar o fundo (segundos)', 11)
+        combo(self.config, self.capture_time, list(CAPTURE_TIMES), 12, self.controller.set_capture_time)
+        label(self.config, 'Pausa depois do estalo, antes de sumir (segundos)', 13)
+        combo(self.config, self.snap_delay, list(SNAP_DELAYS), 14, self.controller.set_snap_delay)
         self.right = ctk.CTkScrollableFrame(meet_tab, fg_color='transparent')
         self.right.pack(fill='both', expand=True)
         self.right.columnconfigure(0, weight=1)
@@ -329,6 +335,8 @@ class App:
         set_text(self.backend, state.output)
         set_text(self.leave_enabled, state.leave_enabled)
         set_text(self.leave_delay, state.leave_delay)
+        set_text(self.capture_time, state.capture_time)
+        set_text(self.snap_delay, state.snap_delay)
         set_text(self.background_mode, 'Em movimento' if state.dynamic_background else 'Estático')
         set_text(self.background_description, state.background_description)
         set_text(self.output_help, state.output_help)

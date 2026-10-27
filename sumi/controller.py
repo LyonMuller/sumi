@@ -41,6 +41,8 @@ STEPS = {
 RESOLUTIONS = ('1280 × 720', '640 × 480')
 HOLD_TIMES = ('0.8', '1.0', '1.5', '2.0')
 LEAVE_DELAYS = ('2', '3', '5')
+CAPTURE_TIMES = ('3', '5', '10')
+SNAP_DELAYS = ('0', '1', '2', '3')
 OBS_DOWNLOAD = 'https://obsproject.com/download'
 PRIMARY_PHASES = ('uncalibrated', 'confirm', 'ready', 'holding', 'hidden')
 RECALIBRATE_PHASES = ('confirm', 'ready', 'holding', 'hidden')
@@ -89,6 +91,8 @@ class ViewState:
     leave_enabled: bool
     leave_delay: str
     leave_countdown: float | None
+    capture_time: str
+    snap_delay: str
     preview_revision: int
     frame: Frame | None = field(default=None, repr=False)
     clones: bool = False
@@ -131,6 +135,8 @@ class Controller:
         self.effect = choose(effect, list(LABELS), 'Teleporte anime')
         self.resolution = choose(self.preferences.get('resolution'), RESOLUTIONS, RESOLUTIONS[0])
         self.hold = choose(self.preferences.get('hold'), HOLD_TIMES, '1.0')
+        self.capture_time = choose(self.preferences.get('capture_time'), CAPTURE_TIMES, '5')
+        self.snap_delay = choose(self.preferences.get('snap_delay'), SNAP_DELAYS, '2')
         self.output = choose(self.preferences.get('backend'), list(output_choices()), 'OBS Virtual Camera')
         self.dynamic = self.preferences.get('background', 'static') == 'live'
         self.sounds = self.preferences.get('sounds', True) is not False
@@ -231,6 +237,31 @@ class Controller:
     def set_output(self, label: str) -> None:
         self._set_option('output', label, list(output_choices()))
 
+    def set_capture_time(self, value: str) -> None:
+        """Seconds of countdown before the background capture; applies to the next capture."""
+        if value not in CAPTURE_TIMES:
+            raise ValueError('Opção inválida.')
+        self.capture_time = value
+        if self.engine is not None:
+            self.engine.capture_seconds = float(value)
+        self._remember(capture_time=value)
+
+    def set_snap_delay(self, value: str) -> None:
+        """Pause between the snap and the dust effect, time for a line before vanishing."""
+        if value not in SNAP_DELAYS:
+            raise ValueError('Opção inválida.')
+        self.snap_delay = value
+        if self.engine is not None:
+            self.engine.snap_delay = float(value)
+        self._remember(snap_delay=value)
+
+    def _remember(self, **values: object) -> None:
+        self.preferences.update(values)
+        try:
+            save_preferences(self.preferences, self.preferences_path)
+        except OSError:
+            pass
+
     def set_leave_delay(self, value: str) -> None:
         if value not in LEAVE_DELAYS:
             raise ValueError('Opção inválida.')
@@ -283,11 +314,13 @@ class Controller:
         self.engine = self.engine_factory(Settings(
             camera=device.index, camera_backend=device.backend, width=width, height=height,
             hold=float(self.hold), virtual=output_choices()[self.output], effect=LABELS[self.effect],
-            dynamic_background=self.dynamic))
+            dynamic_background=self.dynamic, capture_seconds=float(self.capture_time),
+            snap_delay=float(self.snap_delay)))
         self.preferences = {'camera_path': device.path, 'resolution': self.resolution, 'backend': self.output,
                             'hold': self.hold, 'effect': self.effect,
                             'background': 'live' if self.dynamic else 'static',
                             'sounds': self.sounds, 'call_sounds': self.call_sounds,
+                            'capture_time': self.capture_time, 'snap_delay': self.snap_delay,
                             # Keep the marker so the next launch respects the chosen background.
                             'background_default_revision': BACKGROUND_DEFAULT_REVISION}
         try:
@@ -492,7 +525,7 @@ class Controller:
         hidden = engine is not None and engine.hidden
         clones = engine is not None and getattr(engine, 'clones', False) is True
         if running:
-            primary = ('Capturar fundo (4 s)' if phase == 'uncalibrated' else 'Confirmar fundo vazio'
+            primary = (f'Capturar fundo ({self.capture_time} s)' if phase == 'uncalibrated' else 'Confirmar fundo vazio'
                        if phase == 'confirm' else 'Reaparecer' if hidden else 'Dispensar clones' if clones else
                        'Disparar onda' if LABELS.get(self.effect) == 'kamehameha' else
                        'Lançar esfera' if LABELS.get(self.effect) == 'genkidama' else 'Ativar efeito')
@@ -526,6 +559,7 @@ class Controller:
             sounds=self.sounds, call_sounds=self.call_sounds,
             meet_status=self.meet_status, main_notice=self.main_notice,
             leave_enabled=self.leave_enabled, leave_delay=self.leave_delay,
+            capture_time=self.capture_time, snap_delay=self.snap_delay,
             leave_countdown=(None if self.countdown.deadline is None
                              else max(0.0, self.countdown.deadline - monotonic())),
             preview_revision=revision, frame=frame, clones=clones,

@@ -100,7 +100,7 @@ class ControllerTests(unittest.TestCase):
         controller = self.make()
         controller.start()
         state = controller.tick()
-        self.assertEqual(state.primary_label, 'Capturar fundo (4 s)')
+        self.assertEqual(state.primary_label, 'Capturar fundo (5 s)')
         self.assertFalse(state.inputs_enabled)
         self.assertEqual(state.start_label, 'Parar câmera')
         self.assertEqual(state.performance, '29.5 FPS · Teleporte anime')
@@ -142,6 +142,22 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(state.camera, 'Nenhuma webcam encontrada')
         self.assertIn('Privacidade e Segurança', state.hint)
         self.assertFalse(state.primary_enabled)
+
+    def test_capture_time_and_snap_delay_apply_live_and_persist(self):
+        controller = self.make()
+        self.assertEqual((controller.capture_time, controller.snap_delay), ('5', '2'))
+        controller.start()
+        engine = self.engines[-1]
+        self.assertEqual((engine.settings.capture_seconds, engine.settings.snap_delay), (5.0, 2.0))
+        controller.set_capture_time('10')
+        controller.set_snap_delay('0')
+        self.assertEqual((engine.capture_seconds, engine.snap_delay), (10.0, 0.0))
+        with self.assertRaises(ValueError):
+            controller.set_snap_delay('7')
+        reloaded = Controller(preferences_path=self.settings, bridge_factory=None)
+        self.assertEqual((reloaded.capture_time, reloaded.snap_delay), ('10', '0'))
+        state = controller.tick().public()
+        self.assertEqual((state['capture_time'], state['snap_delay']), ('10', '0'))
 
     def test_public_state_is_json_ready(self):
         import json
